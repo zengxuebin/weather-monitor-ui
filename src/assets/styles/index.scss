@@ -1,0 +1,12 @@
+@use "./normalize.scss";
+@use "./elementui.scss";
+
+a {
+  color: #00a096;
+  text-decoration: none;
+}
+
+a:hover,
+a:active {
+  color: #00796a;
+}
