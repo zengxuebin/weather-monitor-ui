@@ -1,6 +1,6 @@
 <template>
   <div>
-    index
+    pushAlert
   </div>
 </template>
 

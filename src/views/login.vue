@@ -2,7 +2,7 @@
   <el-container class="login-container">
     <el-header class="login-header">
       <el-row :gutter="20">
-        <el-col :span="1">
+        <el-col :span="1" style="text-align: right;">
           <img class="logo" src="@/assets/logo/logo.png">
         </el-col>
         <el-col :span="14">
@@ -17,7 +17,7 @@
       <div class="login-form">
         <el-row>
           <el-col :span="24" class="login-title">
-            <h2>用户登陆</h2>
+            <h2>用户登录</h2>
           </el-col>
         </el-row>
         <el-form ref="loginRef" :model="loginForm" status-icon :rules="rules" size="large">
@@ -46,7 +46,10 @@
                 <img :src="codeUrl" @click="getCode" class="login-code-img" />
               </div>
             </el-form-item>
-            <el-button type="primary" @click="submitForm(loginRef)" class="login-btn">登 录</el-button>
+            <el-button type="primary" @click="handleLogin(loginRef)" class="login-btn" :disabled="loading">
+              <span v-if="!loading">登 录</span>
+              <span v-else>登 录 中...</span>
+            </el-button>
             <div class="other-tips">
               <el-row class="row-bg" justify="end">
                 <el-col :span="12" style="text-align: left;"><a href="#">忘记密码？</a></el-col>
@@ -57,6 +60,10 @@
           </div>
         </el-form>
       </div>
+      <!--  底部  -->
+      <div class="el-login-footer">
+        <span>Copyright © 2023 ecjtu-software All Rights Reserved.</span>
+      </div>
     </el-main>
   </el-container>
 </template>
@@ -65,6 +72,11 @@
 import { reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { getCodeImg } from '@/api/login'
+import useUserStore from '@/stores/user'
+import router from '@/router'
+import { encrypt } from "@/utils/secret"
+
+const userStore = useUserStore()
 
 const loginRef = ref<FormInstance>()
 
@@ -85,11 +97,26 @@ const rules = reactive<FormRules>({
 const codeUrl = ref('')
 const loading = ref(false)
 
-const submitForm = (formEl: FormInstance | undefined) => {
+const handleLogin = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
+      loading.value = true
       console.log('submit!')
+      // 密码加密
+      const userForm = reactive({
+        username: loginForm.username,
+        password: encrypt(loginForm.password),
+        code: loginForm.code,
+        uuid: loginForm.uuid
+      })
+      userStore.loginUser(userForm).then(() => {
+        console.log("登陆成功");
+        router.push('/index')
+      }).catch(() => {
+        loading.value = false
+        getCode()
+      })
     } else {
       console.log('error submit!')
       return false
@@ -126,19 +153,18 @@ getCode()
 }
 
 .login-header {
-  height: 95px;
-  line-height: 95px;
+  height: 80px;
+  line-height: 80px;
 }
 
 .logo {
-  height: 60px;
+  height: 40px;
   vertical-align: middle;
 }
 
 .title {
   display: inline;
   color: #00796a;
-  margin-left: 5px;
 }
 
 .login-form {
@@ -187,4 +213,17 @@ getCode()
 .other-tips {
   margin-top: 30px;
   font-size: 14px;
-}</style>
+}
+
+.el-login-footer {
+  height: 40px;
+  line-height: 40px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+</style>

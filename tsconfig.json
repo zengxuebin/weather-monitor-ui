@@ -10,7 +10,8 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ]
+      ],
+      "lib": ["ES2022"],
     },
     "ignoreDeprecations": "5.0",
   },
@@ -19,5 +20,4 @@
       "path": "./tsconfig.node.json"
     }
   ],
-  "lib": ["es2017.object"],
 }

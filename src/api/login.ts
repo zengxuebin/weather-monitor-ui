@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
 /**
- * 登陆方法
- * @param data usernamae password code
+ * 登录
+ * @param data username password code
  * @returns token 
  */
 export function login(data: any) {
@@ -11,11 +11,15 @@ export function login(data: any) {
     headers: {
       isToken: false
     },
-    url: '/login',
+    url: '/auth/login',
     data
   })
 }
 
+/**
+ * 获取验证码
+ * @returns 验证码
+ */
 export function getCodeImg() {
   return request({
     method: 'get',
@@ -23,5 +27,27 @@ export function getCodeImg() {
       isToken: false
     },
     url: '/code/captchaImage',
+  })
+}
+
+/**
+ * 获取用户信息
+ * @returns 用户信息
+ */
+export function getInfo() {
+  return request({
+    method: 'get',
+    url: '/auth/getUserInfo'
+  })
+}
+
+/**
+ * 退出登录
+ * @returns 结果
+ */
+export function logout() {
+  return request({
+    method: 'post',
+    url: '/auth/logout'
   })
 }

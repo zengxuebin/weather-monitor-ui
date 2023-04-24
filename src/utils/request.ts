@@ -1,5 +1,7 @@
 import axios from "axios";
 import { ElMessage } from 'element-plus'
+import useUserStore from "@/stores/user";
+import router from "@/router/index";
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 
@@ -8,6 +10,10 @@ declare module "axios" {
   interface AxiosResponse<T = any> {
     img: string,
     uuid: string,
+    token: string,
+    user: any,
+    roles: any,
+    permissions: any,
   }
 }
 
@@ -32,7 +38,7 @@ service.interceptors.request.use(config => {
 
   return config;
 }, error => {
-  console.log(error)
+
   return Promise.reject(error)
 });
 
@@ -43,19 +49,24 @@ service.interceptors.response.use(res => {
   // 获取错误信息
   const msg = res.data.msg;
 
+  if (code === 401) {
+    useUserStore().logoutUser().then(() => {
+      router.push('/login')
+    })
+    return Promise.reject('token已过期, 请重新登录。')
+  }
+
   if (code != 200) {
     ElMessage.error(msg)
     return Promise.reject(msg)
   }
 
-  return  Promise.resolve(res.data)
+  return Promise.resolve(res.data)
 }, error => {
-
   const errorData = JSON.parse(error.request.response)
   if (errorData.msg) {  // 判断是否有message属性
     ElMessage.error(errorData.msg)
   }
-  
   return Promise.reject(errorData);
 });
 

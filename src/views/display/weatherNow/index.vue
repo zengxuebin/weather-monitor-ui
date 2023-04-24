@@ -1,6 +1,6 @@
 <template>
   <div>
-    index
+    now
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    index
+    weatherForecast
   </div>
 </template>
 

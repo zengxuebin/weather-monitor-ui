@@ -1,6 +1,6 @@
 <template>
   <div>
-    index
+    alertRelease
   </div>
 </template>
 
