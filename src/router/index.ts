@@ -363,10 +363,12 @@ const whiteList = ['/login', '/register'];
 router.beforeEach((to, from, next) => {
   if (localStorage.getItem('token')) {
     if (to.path === '/login') {
-      next({ path: '/main' })
+      next({ path: '/index' })
     } else {
       if (useUserStore().roles.length === 0) {
         useUserStore().getUserInfo().then(() => {
+          // 管理员标志
+          console.log(useUserStore().roles[0]);
           useRouterStore().generateRoutes().then((routers: any) => {
             routers.forEach((route: any) => {
               // router.addRoute(route)

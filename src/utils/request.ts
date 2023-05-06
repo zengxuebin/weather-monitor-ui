@@ -14,6 +14,7 @@ declare module "axios" {
     user: any,
     roles: any,
     permissions: any,
+    dept: any,
   }
 }
 
@@ -50,6 +51,7 @@ service.interceptors.response.use(res => {
   const msg = res.data.msg;
 
   if (code === 401) {
+    localStorage.removeItem('token')
     useUserStore().logoutUser().then(() => {
       router.push('/login')
     })

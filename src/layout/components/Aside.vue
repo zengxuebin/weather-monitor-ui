@@ -1,6 +1,6 @@
 <template>
   <div class="aside">
-    <el-scrollbar height="650px">
+    <el-scrollbar>
       <el-menu :default-active="currentPath" @open="handleOpen" @close="handleClose" active-text-color="#fff" router
         :collapse="collapse" unique-opened>
         <template v-for="item in routers" :key="item.path">
@@ -38,8 +38,8 @@
 <script setup lang="ts">
 import useAppStore from '@/stores/app'
 import { ref, computed } from "vue"
-import { routes } from "@/router/index";
-import { useRoute } from 'vue-router';
+import { routes } from "@/router/index"
+import { useRoute } from 'vue-router'
 const appStore = useAppStore()
 const routers = routes
 console.log(routers);

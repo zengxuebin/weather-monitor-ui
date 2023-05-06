@@ -5,7 +5,7 @@
     </el-header>
     <el-main class="main">
       <router-view v-slot="{ Component, route }">
-        <transition name="fade">
+        <transition name="slide-fade" mode="out-in">
           <component :is="Component" :key="route.path" />
         </transition>
       </router-view>
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import MenuTitle from "@/components/MenuTitle.vue";
+import MenuTitle from "@/components/MenuTitle.vue"
 </script>
 
 <style lang="scss" scoped>
@@ -33,5 +33,19 @@ import MenuTitle from "@/components/MenuTitle.vue";
 
 .el-container {
   height: 100%;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.1s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
 }
 </style>

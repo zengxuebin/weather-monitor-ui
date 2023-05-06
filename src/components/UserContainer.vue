@@ -4,21 +4,28 @@
     <el-icon size="large" color="#00796a" class="icon">
       <UserFilled />
     </el-icon>
-    <span>气象监测中心-管理员</span>
+    <span>{{ userStore.dept.deptName }}-{{ userStore.user.nickname }}</span>
     <div class="user">
       <el-avatar size="small" :src="circleUrl" class="avatar" />
       <el-dropdown class="el-dropdown-container">
         <span class="el-dropdown-link">
-          管理员ddddd
+          <span>{{ userStore.user.username }}</span>
           <el-icon>
             <arrow-down />
           </el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
-            <el-dropdown-item>Action 2</el-dropdown-item>
-            <el-dropdown-item>Action 3</el-dropdown-item>
+            <el-dropdown-item><i class="vxe-icon-user-fill"></i>个人中心</el-dropdown-item>
+            <el-dropdown-item><el-icon>
+                <Lock />
+              </el-icon>修改密码</el-dropdown-item>
+            <el-dropdown-item divided>
+              <el-icon>
+                <SwitchButton />
+              </el-icon>
+              <span @click="userStore.logoutUser">退出登录</span>
+            </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -27,7 +34,9 @@
 </template>
 
 <script setup lang="ts">
+import useUserStore from "@/stores/user"
 
+const userStore = useUserStore()
 const circleUrl = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
 </script>
 
@@ -68,9 +77,11 @@ const circleUrl = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1ep
   cursor: pointer;
   display: flex;
   align-items: center;
+  & span {
+    font-size: 18px;
+  }
 }
 
 :focus {
   outline: 0
-}
-</style>
+}</style>

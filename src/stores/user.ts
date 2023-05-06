@@ -1,12 +1,14 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { login, getInfo, logout } from '@/api/login'
+import router from '@/router'
 
 export const useUserStore = defineStore('user', () => {
-  let token = ref(localStorage.getItem('token'))
-  let name  = ref('')
-  let roles = ref([])
-  let permissions = ref([])
+  const token = ref(localStorage.getItem('token'))
+  const user  = ref()
+  const roles = ref([])
+  const permissions = ref([])
+  const dept = ref()
 
   /**
    * 登陆
@@ -18,6 +20,7 @@ export const useUserStore = defineStore('user', () => {
       login(userInfo).then(res => {
         localStorage.setItem('token', res.token)
         token.value = res.token
+        console.log(res);
         resolve(res)
       }).catch(error => {
         reject(error)
@@ -32,12 +35,13 @@ export const useUserStore = defineStore('user', () => {
   function getUserInfo() {
     return new Promise((resolve, reject) => {
       getInfo().then(res => {
-        const user = res.user
+        console.log(res);
         if (res.roles && res.roles.length > 0) {
           roles.value = res.roles
           permissions.value = res.permissions
+          dept.value = res.dept
         }
-        name.value = user.username
+        user.value = res.user
         resolve(res)
       }).catch(error => {
         reject(error)
@@ -57,14 +61,16 @@ export const useUserStore = defineStore('user', () => {
         roles.value = []
         permissions.value = []
         resolve('')
+        router.push('/login')
       }).catch(error => {
         localStorage.removeItem('token')
+        router.push('/login')
         reject(error)
       })
     })
   }
 
-  return { token, name, roles, permissions, loginUser, getUserInfo, logoutUser }
+  return { token, user, dept, roles, permissions, loginUser, getUserInfo, logoutUser }
 })
 
 export default useUserStore

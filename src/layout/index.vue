@@ -1,7 +1,7 @@
 <template>
   <el-container id="layout-container">
     <el-header id="layout-header" height="80px"><layout-header /></el-header>
-    <el-container style="position: relative;">
+    <el-container id="layout-section">
       <el-aside id="layout-aside" :width="collapse === 'true' ? '64px' : '200px'"><layout-aside /></el-aside>
       <el-main id="layout-main"><layout-main /></el-main>
     </el-container>
@@ -39,4 +39,11 @@ const collapse = computed(() => store.collapse)
 
 #layout-main {
   padding: 0;
-}</style>
+}
+
+#layout-section {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+</style>
