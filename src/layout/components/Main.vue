@@ -29,6 +29,7 @@ import MenuTitle from "@/components/MenuTitle.vue"
 
 .main {
   background-color: #fff;
+  overflow: hidden;
 }
 
 .el-container {

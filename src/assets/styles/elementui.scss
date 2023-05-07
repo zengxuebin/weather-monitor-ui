@@ -23,4 +23,10 @@
   ),
 );
 
-@use "element-plus/theme-chalk/src/index.scss" as *
+@use "element-plus/theme-chalk/src/index.scss" as *;
+
+.today-card .el-card__header {
+  border-left: #00796a solid 5px;
+  background-color: #c9d9d6;
+  font-weight: bold;
+}

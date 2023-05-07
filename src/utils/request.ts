@@ -51,10 +51,7 @@ service.interceptors.response.use(res => {
   const msg = res.data.msg;
 
   if (code === 401) {
-    localStorage.removeItem('token')
-    useUserStore().logoutUser().then(() => {
-      router.push('/login')
-    })
+    useUserStore().logoutUser()
     return Promise.reject('token已过期, 请重新登录。')
   }
 

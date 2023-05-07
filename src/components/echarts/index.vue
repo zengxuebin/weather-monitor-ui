@@ -3,12 +3,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, markRaw } from 'vue'
 import * as echarts from 'echarts'
 import customTheme from './custom-theme.json'
 
-const chartRef = ref<HTMLElement>()
-const myChart = ref();
+const chartRef = ref<HTMLDivElement>()
+const chartInstance = ref<echarts.ECharts>();
 const props = defineProps({
   options: {
     type: Object,
@@ -26,26 +26,34 @@ const props = defineProps({
 })
 
 echarts.registerTheme('customTheme', customTheme)
-const resizeChart = () => {
-  try {
-    myChart.value.resize();
-  } catch (error) {
-    console.error('Resize chart error:', error);
+
+const initChart = () => {
+  if (chartRef.value) {
+    chartInstance.value = markRaw(echarts.init(chartRef.value, 'customTheme'));
+    chartInstance.value.setOption(props.options);
   }
-}
+};
+
+const resizeChart = () => {
+  if (chartInstance.value) {
+    chartInstance.value.resize();
+  }
+};
 
 onMounted(() => {
-  const chartDom = chartRef.value
-  if (chartDom) {
-    myChart.value = echarts.init(chartDom, customTheme)
-  }
-  myChart.value.setOption(props.options, true)
-  myChart.value.off('resize') // 先解绑 resize 事件
-  myChart.value.on('resize', resizeChart) // 重新绑定 resize 事件
-  window.addEventListener('resize', resizeChart)
+  initChart();
+  window.addEventListener('resize', resizeChart);
 })
+
+onUnmounted(() => {
+  window.removeEventListener('resize', resizeChart);
+  chartInstance.value?.dispose();
+});
+
 watch(() => props.options, (newOptions) => {
-  myChart.value.setOption(newOptions)
+  if (chartInstance.value) {
+    chartInstance.value.setOption(newOptions);
+  }
 }, {
   deep: true
 })
