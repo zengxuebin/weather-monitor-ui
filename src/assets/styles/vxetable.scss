@@ -6,5 +6,9 @@ $vxe-table-font-color: $vxe-font-color;
 $vxe-table-border-color: #e8eaec;
 $vxe-table-border-radius: 4px;
 
+.reverse-table .vxe-body--row .vxe-body--column:first-child {
+  background-color: #eeeeee;
+}
+
 // 引入vxe-table库的样式文件
 @import 'vxe-table/styles/index.scss';

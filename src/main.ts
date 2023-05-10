@@ -7,6 +7,7 @@ import router from './router'
 import '@/assets/styles/index.scss'
 import ElementPlus from 'element-plus'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 
 // 引入vxetable
 import VXETable from 'vxe-table'
@@ -21,6 +22,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(createPinia())
 app.use(router)
 
-app.use(ElementPlus)
+app.use(ElementPlus, {
+  locale: zhCn,
+})
 app.use(VXETable)
 app.mount('#app')

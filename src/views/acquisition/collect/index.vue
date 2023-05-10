@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import type { VXETable, VxeGridInstance, VxeGridListeners, VxeGridProps } from 'vxe-table'
+import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
 
 const serveApiUrl = 'https://api.vxetable.cn/demo'
@@ -90,6 +90,45 @@ const gridOptions = reactive<VxeGridProps>({
         field: 'sex',
         title: '性别',
         span: 6,
+        itemRender: {
+          name: '$select',
+          options: []
+        }
+      },
+      {
+        field: 'sex',
+        title: '性别',
+        span: 6,
+        folding: true,
+        itemRender: {
+          name: '$select',
+          options: []
+        }
+      },
+      {
+        field: 'sex',
+        title: '性别',
+        span: 6,
+        folding: true,
+        itemRender: {
+          name: '$select',
+          options: []
+        }
+      },
+      {
+        field: 'sex',
+        title: '性别',
+        span: 6,
+        folding: true,
+        itemRender: {
+          name: '$select',
+          options: []
+        }
+      },
+      {
+        field: 'sex',
+        title: '性别',
+        span: 6,
         folding: true,
         itemRender: {
           name: '$select',
@@ -98,8 +137,8 @@ const gridOptions = reactive<VxeGridProps>({
       },
       // 功能
       {
-        span: 24,
-        align: 'right',
+        span: 6,
+        align: 'center',
         collapseNode: true,
         itemRender: {
           name: '$buttons', children: [
@@ -126,6 +165,10 @@ const gridOptions = reactive<VxeGridProps>({
       {
         status: 'primary',
         name: '新增'
+      },
+      {
+        status: 'primary',
+        name: '采集'
       },
       {
         status: 'primary',
@@ -200,77 +243,49 @@ const gridOptions = reactive<VxeGridProps>({
   columns: [
     {
       type: 'checkbox',
-      width: 50
+      width: 60,
+      align: "center",
     },
     {
       type: 'seq',
+      align: "center",
       width: 60
     },
     {
       field: 'name',
       title: 'Name',
-      minWidth:50,
+      align: "center",
+      minWidth: 100,
       sortable: true,
     },
     {
       field: 'nickname',
       title: 'Nickname',
-      minWidth:50,
+      align: "center",
+      minWidth: 100,
     },
     {
       field: 'age',
       title: 'Age',
-      minWidth:50,
+      align: "center",
+      minWidth: 80,
     },
     {
       field: 'sex',
       title: 'Sex',
-      minWidth:50,
+      align: "center",
+      minWidth: 80,
     },
     {
       field: 'describe',
       title: 'Describe',
-      width:50,
+      align: "center",
+      minWidth: 250,
     },
     {
       field: 'describe',
       title: 'Describe',
-      width:50,
-    },
-    {
-      field: 'describe',
-      title: 'Describe',
-      width:250,
-    },
-    {
-      field: 'describe',
-      title: 'Describe',
-      width:250,
-    },
-    {
-      field: 'describe',
-      title: 'Describe',
-      width:250,
-    },
-    {
-      field: 'describe',
-      title: 'Describe',
-      minWidth:250,
-    },
-    {
-      field: 'describe',
-      title: 'Describe',
-      minWidth:250,
-    },
-    {
-      field: 'describe',
-      title: 'Describe',
-      minWidth:250,
-    },
-    {
-      field: 'describe',
-      title: 'Describe',
-      minWidth:250,
+      width: 250,
     },
   ],
   checkboxConfig: {

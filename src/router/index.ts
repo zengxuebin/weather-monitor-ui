@@ -64,56 +64,24 @@ export const routes = [
         component: () => import('@/views/acquisition/collect/index.vue')
       },
       {
-        path: '/acquisition/analog',
-        name: 'Analog',
-        hidden: false,
-        meta: {
-          title: '数据模拟',
-          icon: 'vxe-icon-folder-open'
-        },
-        component: () => import('@/views/acquisition/analog/index.vue')
-      },
-      {
-        path: '/acquisition/quartz',
-        name: 'Quartz',
-        hidden: false,
-        meta: {
-          title: '定时更新',
-          icon: 'vxe-icon-refresh'
-        },
-        component: () => import('@/views/acquisition/quartz/index.vue')
-      },
-    ]
-  },
-  {
-    path: '/handle',
-    name: 'Handle',
-    hidden: false,
-    meta: {
-      title: '数据处理',
-      icon: 'vxe-icon-square-down'
-    },
-    component: () => import('@/layout/index.vue'),
-    children: [
-      {
-        path: '/handle/clean',
-        name: 'Clean',
-        hidden: false,
-        meta: {
-          title: '数据清洗',
-          icon: 'vxe-icon-delete'
-        },
-        component: () => import('@/views/handle/clean/index.vue')
-      },
-      {
-        path: '/handle/analysis',
+        path: '/acquisition/analysis',
         name: 'Analysis',
         hidden: false,
         meta: {
           title: '统计分析',
           icon: 'vxe-icon-chart-bar-y'
         },
-        component: () => import('@/views/handle/analysis/index.vue')
+        component: () => import('@/views/acquisition/analysis/index.vue')
+      },
+      {
+        path: '/acquisition/weatherStation',
+        name: 'weatherStation',
+        hidden: false,
+        meta: {
+          title: '站点管理',
+          icon: 'vxe-icon-flag-fill'
+        },
+        component: () => import('@/views/acquisition/weatherStation/index.vue')
       },
     ]
   },
@@ -187,7 +155,7 @@ export const routes = [
     hidden: false,
     meta: {
       title: '预警管理',
-      icon: 'vxe-icon-warning-triangle'
+      icon: 'vxe-icon-bell-fill'
     },
     component: () => import('@/layout/index.vue'),
     children: [
@@ -228,7 +196,7 @@ export const routes = [
         name: 'information',
         hidden: false,
         meta: {
-          title: '预警分析',
+          title: '预警统计分析',
           icon: 'vxe-icon-chart-line'
         },
         component: () => import('@/views/alertAnalysis/information/index.vue')
@@ -261,7 +229,7 @@ export const routes = [
         hidden: false,
         meta: {
           title: '推送预警信息',
-          icon: 'vxe-icon-bell'
+          icon: 'vxe-icon-envelope'
         },
         component: () => import('@/views/alertPush/pushAlert/index.vue')
       },
