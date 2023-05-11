@@ -179,6 +179,16 @@ export const routes = [
         },
         component: () => import('@/views/alertManager/alertRule/index.vue')
       },
+      {
+        path: '/alert-manager/view-alert',
+        name: 'viewPushAlert',
+        hidden: false,
+        meta: {
+          title: '预警信息查询',
+          icon: 'vxe-icon-search'
+        },
+        component: () => import('@/views/alertPush/viewPushAlert/index.vue')
+      },
     ]
   },
   {
@@ -202,7 +212,7 @@ export const routes = [
         component: () => import('@/views/alertAnalysis/information/index.vue')
       },
       {
-        path: '/alert-analysis/view-alert',
+        path: '/alert-analysis/view-alert-push',
         name: 'viewAlert',
         hidden: false,
         meta: {
@@ -228,20 +238,10 @@ export const routes = [
         name: 'pushAlert',
         hidden: false,
         meta: {
-          title: '推送预警信息',
+          title: '预警信息推送',
           icon: 'vxe-icon-envelope'
         },
         component: () => import('@/views/alertPush/pushAlert/index.vue')
-      },
-      {
-        path: '/alert-push/view-push-alert',
-        name: 'viewPushAlert',
-        hidden: false,
-        meta: {
-          title: '查询预警信息',
-          icon: 'vxe-icon-search'
-        },
-        component: () => import('@/views/alertPush/viewPushAlert/index.vue')
       },
     ]
   },

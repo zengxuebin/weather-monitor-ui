@@ -6,7 +6,23 @@ $vxe-table-font-color: $vxe-font-color;
 $vxe-table-border-color: #e8eaec;
 $vxe-table-border-radius: 4px;
 
-.reverse-table .vxe-body--row .vxe-body--column:first-child {
+.alert-table .vxe-body--column.col-red {
+  color: #c63f34;
+}
+
+.alert-table .vxe-body--column.col-orange {
+  color: #f2a747;
+}
+
+.alert-table .vxe-body--column.col-yellow {
+  color: #f6bd0e;
+}
+
+.alert-table .vxe-body--column.col-blue {
+  color: #4064f6;
+}
+
+.alert-expand-table .vxe-body--row.col-grey {
   background-color: #eeeeee;
 }
 
