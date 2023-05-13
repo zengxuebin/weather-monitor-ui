@@ -1,8 +1,12 @@
 <template>
   <div>
-    <vxe-table :ref="xTable" round height="700" align="center" :row-config="{ isHover: true }"
-      :cell-class-name="cellClassName" :data="tableData" class="alert-table"
-      :expand-config="{}">
+    <vxe-toolbar>
+      <template #buttons>
+        <span style="font-size: 15px;">本次预警数据统计分析从2023-01-01至今</span>
+      </template>
+    </vxe-toolbar>
+    <vxe-table :ref="xTable" round height="680" align="center" :row-config="{ isHover: true }"
+      :cell-class-name="cellClassName" :data="tableData" class="alert-table" :expand-config="{}">
       <vxe-column type="seq" width="60" title="编号"></vxe-column>
       <vxe-column field="city" title="地区"></vxe-column>
       <vxe-column field="sort" title="类别" type="expand">

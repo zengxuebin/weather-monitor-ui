@@ -9,8 +9,6 @@ import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
 
-const serveApiUrl = 'https://api.vxetable.cn/demo'
-
 const xGrid = ref<VxeGridInstance>()
 
 const gridOptions = reactive<VxeGridProps>({
@@ -26,8 +24,6 @@ const gridOptions = reactive<VxeGridProps>({
   exportConfig: {},
   // 行配置信息
   rowConfig: {
-    // 自定义行数据唯一主键的字段名（默认自动生成）
-    keyField: 'id',
     // 当鼠标移到行时，是否要高亮当前行
     isHover: true
   },
@@ -67,73 +63,77 @@ const gridOptions = reactive<VxeGridProps>({
     titleOverflow: true,
     items: [
       {
-        field: 'name',
-        title: '名称',
+        field: 'username',
+        title: '用户账号',
         span: 6,
         itemRender: {
           name: '$input',
           props: {
-            placeholder: '请输入名称'
+            placeholder: '请输入用户账号'
           }
         }
       },
       {
         field: 'sex',
-        title: '性别',
+        title: '用户性别',
         span: 6,
         itemRender: {
           name: '$select',
-          options: []
+          options: [],
+          props: { placeholder: '请选择用户性别' },
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'nickname',
+        title: '用户昵称',
         span: 6,
         itemRender: {
-          name: '$select',
-          options: []
+          name: '$input',
+          props: {
+            placeholder: '请输入用户昵称'
+          }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'phone',
+        title: '手机号码',
+        span: 6,
+        folding: true,
+        itemRender: {
+          name: '$input',
+          props: {
+            placeholder: '请输入手机号码'
+          }
+        }
+      },
+      {
+        field: 'email',
+        title: '电子邮箱',
+        span: 6,
+        folding: true,
+        itemRender: {
+          name: '$input',
+          props: {
+            placeholder: '请输入电子邮箱'
+          }
+        }
+      },
+      {
+        field: 'deptName',
+        title: '所在部门',
         span: 6,
         folding: true,
         itemRender: {
           name: '$select',
-          options: []
+          options: [
+            { label: '数据监测中心', value: '数据监测中心' },
+            { label: '用户中心', value: '用户中心' },
+          ]
         }
       },
       {
-        field: 'sex',
-        title: '性别',
         span: 6,
         folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
       },
       // 功能
       {
@@ -211,16 +211,56 @@ const gridOptions = reactive<VxeGridProps>({
             })
             // return Promise
             const list = [
-              { id: 10001, name: 'Test1' + form.name, nickname: 'T1', role: 'Develop', sex: '1', age: 28, address: 'Shenzhen' },
-              { id: 10002, name: 'Test2' + form.name, nickname: 'T2', role: 'Test', sex: '0', age: 22, address: 'Guangzhou' },
-              { id: 10003, name: 'Test3' + form.name, nickname: 'T3', role: 'PM', sex: '1', age: 32, address: 'Shanghai' },
-              { id: 10004, name: 'Test4' + form.name, nickname: 'T4', role: 'Designer', sex: '0', age: 23, address: 'Shenzhen' },
-              { id: 10005, name: 'Test5' + form.name, nickname: 'T5', role: 'Develop', sex: '0', age: 30, address: 'Shanghai' },
-              { id: 10006, name: 'Test6' + form.name, nickname: 'T6', role: 'Develop', sex: '0', age: 27, address: 'Shanghai' },
-              { id: 10007, name: 'Test7' + form.name, nickname: 'T7', role: 'Develop', sex: '1', age: 29, address: 'Shenzhen' },
-              { id: 10008, name: 'Test8' + form.name, nickname: 'T8', role: 'Develop', sex: '0', age: 32, address: 'Shanghai' },
-              { id: 10009, name: 'Test9' + form.name, nickname: 'T9', role: 'Develop', sex: '1', age: 30, address: 'Shenzhen' },
-              { id: 10010, name: 'Test10' + form.name, nickname: 'T10', role: 'Develop', sex: '0', age: 34, address: 'Shanghai' }
+              {
+                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
+                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
+                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
+                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
+                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
+                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
+                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
+                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
+                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
+                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
+                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
             ]
             resolve({
               records: list,
@@ -241,47 +281,88 @@ const gridOptions = reactive<VxeGridProps>({
       type: 'checkbox',
       width: 60,
       align: "center",
+      fixed: 'left',
     },
     {
       type: 'seq',
+      title: '序号',
       align: "center",
       width: 60
     },
     {
-      field: 'name',
-      title: 'Name',
+      field: 'username',
+      title: '用户账号',
       align: "center",
-      minWidth: 100,
-      sortable: true,
+      width: 120,
     },
     {
       field: 'nickname',
-      title: 'Nickname',
+      title: '用户昵称',
       align: "center",
-      minWidth: 100,
+      width: 150,
     },
     {
-      field: 'age',
-      title: 'Age',
+      field: 'password',
+      title: '用户密码',
       align: "center",
-      minWidth: 80,
+      width: 150,
+    },
+    {
+      field: 'phone',
+      title: '手机号码',
+      align: "center",
+      width: 150,
+    },
+    {
+      field: 'email',
+      title: '电子邮箱',
+      align: "center",
+      width: 180,
+    },
+    {
+      field: 'deptName',
+      title: '所在部门',
+      align: "center",
+      width: 150,
     },
     {
       field: 'sex',
-      title: 'Sex',
+      title: '性别',
       align: "center",
-      minWidth: 80,
+      width: 80,
+      formatter: ({ cellValue}) => {
+        if (cellValue === '0') {
+          return '男'
+        }
+        if (cellValue === '1') {
+          return '女'
+        }
+        return '未知'
+      }
     },
     {
-      field: 'describe',
-      title: 'Describe',
+      field: 'createBy',
+      title: '创建者',
       align: "center",
-      minWidth: 250,
+      width: 120,
     },
     {
-      field: 'describe',
-      title: 'Describe',
-      width: 250,
+      field: 'createTime',
+      title: '创建时间',
+      align: "center",
+      width: 180,
+    },
+    {
+      field: 'updateBy',
+      title: '更新者',
+      align: "center",
+      width: 120,
+    },
+    {
+      field: 'updateTime',
+      title: '更新时间',
+      align: "center",
+      width: 180,
     },
   ],
   checkboxConfig: {

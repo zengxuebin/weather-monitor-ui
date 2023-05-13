@@ -1,12 +1,42 @@
 <template>
   <div style="overflow: hidden; width: 100%; height: 100%;">
-    <vxe-grid ref='xGrid' v-bind="gridOptions"></vxe-grid>
+    <vxe-grid ref='xGrid' v-bind="gridOptions" v-on="gridEvent">
+      <template #cache_status="{ row }">
+        <el-tag size='large'>正常</el-tag>
+      </template>
+    </vxe-grid>
+    <vxe-modal v-model="dictDataModal.visible" width="60%" maskClosable>
+      <template #title>
+        <span>字典数据</span>
+      </template>
+      <template #default>
+        <vxe-table show-overflow height="530" :sync-resize="dictDataModal.visible" :data="dictDataModal.tableData"
+          :row-config="{ isHover: true }">
+          <!-- { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' }, -->
+          <vxe-column field="dictCode" title="字典编码" minWidth="80" align="center"></vxe-column>
+          <vxe-column field="dictLabel" title="字典标签" minWidth="120" align="center"></vxe-column>
+          <vxe-column field="dictValue" title="字典键值" minWidth="120" align="center"></vxe-column>
+          <vxe-column field="orderNum" title="字典排序" minWidth="120" align="center"></vxe-column>
+          <vxe-column field="status" title="字典状态" minWidth="120" align="center">
+            <template #default="{ row }">
+              <el-tag size='large'>正常</el-tag>
+            </template>
+          </vxe-column>
+          <vxe-column field="isDefault" title="是否默认" minWidth="120" align="center">
+            <template #default="{ row }">
+              <el-tag size='large' v-if="row.isDefault === '0'">是</el-tag>
+              <el-tag size='large' type="warning" v-else>否</el-tag>
+            </template>
+          </vxe-column>
+        </vxe-table>
+      </template>
+    </vxe-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
+import type { VxeGridInstance, VxeGridListeners, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
 
 const serveApiUrl = 'https://api.vxetable.cn/demo'
@@ -27,7 +57,7 @@ const gridOptions = reactive<VxeGridProps>({
   // 行配置信息
   rowConfig: {
     // 自定义行数据唯一主键的字段名（默认自动生成）
-    keyField: 'id',
+    keyField: 'dictId',
     // 当鼠标移到行时，是否要高亮当前行
     isHover: true
   },
@@ -67,79 +97,43 @@ const gridOptions = reactive<VxeGridProps>({
     titleOverflow: true,
     items: [
       {
-        field: 'name',
-        title: '名称',
+        field: 'dictName',
+        title: '字典名称',
         span: 6,
         itemRender: {
           name: '$input',
           props: {
-            placeholder: '请输入名称'
+            placeholder: '请输入字典名称'
           }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'status',
+        title: '字典状态',
         span: 6,
         itemRender: {
           name: '$select',
-          options: []
+          options: [],
+          props: {
+            placeholder: '请选择字典状态'
+          }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'dictType',
+        title: '字典类型',
         span: 6,
         itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
+          name: '$input',
+          props: {
+            placeholder: '请输入字典类型'
+          }
         }
       },
       // 功能
       {
         span: 6,
         align: 'center',
-        collapseNode: true,
         itemRender: {
           name: '$buttons', children: [
             {
@@ -161,22 +155,6 @@ const gridOptions = reactive<VxeGridProps>({
     ]
   },
   toolbarConfig: {
-    buttons: [
-      {
-        status: 'primary',
-        name: '新增'
-      },
-      {
-        status: 'primary',
-        name: '编辑'
-      },
-      // 删除选中行；会自动触发 ajax.delete 方法
-      {
-        code: 'delete',
-        status: 'primary',
-        name: '删除'
-      },
-    ],
     refresh: true, // 显示刷新按钮
     export: true, // 显示导出按钮
     zoom: true, // 显示全屏按钮
@@ -211,16 +189,26 @@ const gridOptions = reactive<VxeGridProps>({
             })
             // return Promise
             const list = [
-              { id: 10001, name: 'Test1' + form.name, nickname: 'T1', role: 'Develop', sex: '1', age: 28, address: 'Shenzhen' },
-              { id: 10002, name: 'Test2' + form.name, nickname: 'T2', role: 'Test', sex: '0', age: 22, address: 'Guangzhou' },
-              { id: 10003, name: 'Test3' + form.name, nickname: 'T3', role: 'PM', sex: '1', age: 32, address: 'Shanghai' },
-              { id: 10004, name: 'Test4' + form.name, nickname: 'T4', role: 'Designer', sex: '0', age: 23, address: 'Shenzhen' },
-              { id: 10005, name: 'Test5' + form.name, nickname: 'T5', role: 'Develop', sex: '0', age: 30, address: 'Shanghai' },
-              { id: 10006, name: 'Test6' + form.name, nickname: 'T6', role: 'Develop', sex: '0', age: 27, address: 'Shanghai' },
-              { id: 10007, name: 'Test7' + form.name, nickname: 'T7', role: 'Develop', sex: '1', age: 29, address: 'Shenzhen' },
-              { id: 10008, name: 'Test8' + form.name, nickname: 'T8', role: 'Develop', sex: '0', age: 32, address: 'Shanghai' },
-              { id: 10009, name: 'Test9' + form.name, nickname: 'T9', role: 'Develop', sex: '1', age: 30, address: 'Shenzhen' },
-              { id: 10010, name: 'Test10' + form.name, nickname: 'T10', role: 'Develop', sex: '0', age: 34, address: 'Shanghai' }
+              {
+                dictId: 1, dictName: '用户性别', dictType: 'sys_user_sex', status: '0',
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: '用户性别列表'
+              },
+              {
+                dictId: 2, dictName: '用户性别', dictType: 'sys_user_sex', status: '0',
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: '用户性别列表'
+              },
+              {
+                dictId: 3, dictName: '用户性别', dictType: 'sys_user_sex', status: '0',
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: '用户性别列表'
+              },
+              {
+                dictId: 4, dictName: '用户性别', dictType: 'sys_user_sex', status: '0',
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: '用户性别列表'
+              },
             ]
             resolve({
               records: list,
@@ -238,50 +226,62 @@ const gridOptions = reactive<VxeGridProps>({
   },
   columns: [
     {
-      type: 'checkbox',
-      width: 60,
-      align: "center",
-    },
-    {
+      title: '序号',
       type: 'seq',
       align: "center",
       width: 60
     },
     {
-      field: 'name',
-      title: 'Name',
+      field: 'dictName',
+      title: '字典名称',
       align: "center",
-      minWidth: 100,
-      sortable: true,
+      width: 120,
     },
     {
-      field: 'nickname',
-      title: 'Nickname',
+      field: 'dictType',
+      title: '字典类型',
       align: "center",
-      minWidth: 100,
+      width: 150,
+      className: 'cell-click',
     },
     {
-      field: 'age',
-      title: 'Age',
+      field: 'status',
+      title: '字典状态',
       align: "center",
-      minWidth: 80,
+      width: 120,
+      slots: {
+        default: 'cache_status',
+      },
     },
     {
-      field: 'sex',
-      title: 'Sex',
+      field: 'remark',
+      title: '备注',
       align: "center",
-      minWidth: 80,
+      width: 200,
     },
     {
-      field: 'describe',
-      title: 'Describe',
+      field: 'createBy',
+      title: '创建者',
       align: "center",
-      minWidth: 250,
+      width: 120,
     },
     {
-      field: 'describe',
-      title: 'Describe',
-      width: 250,
+      field: 'createTime',
+      title: '创建时间',
+      align: "center",
+      width: 180,
+    },
+    {
+      field: 'updateBy',
+      title: '更新者',
+      align: "center",
+      width: 120,
+    },
+    {
+      field: 'updateTime',
+      title: '更新时间',
+      align: "center",
+      width: 180,
     },
   ],
   checkboxConfig: {
@@ -291,17 +291,52 @@ const gridOptions = reactive<VxeGridProps>({
   },
 })
 
+const gridEvent: VxeGridListeners = {
+  cellClick({ row, column }) {
+    console.log(row);
+    console.log(column);
+    if (column.field == "dictType") {
+      console.log('打开对话框')
+      dictDataModal.visible = true
+    }
+  },
+}
+
+const dictDataModal = reactive({
+  visible: false,
+  tableData: [
+    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
+    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
+    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
+    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
+    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
+    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
+    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
+    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
+    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
+    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
+    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
+    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
+    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
+    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
+    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
+    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
+    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
+    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
+  ],
+})
+
 onMounted(() => {
-  const sexList = [
-    { label: '男', value: '0' },
-    { label: '女', value: '1' },
+  const statusList = [
+    { label: '正常', value: '0' },
+    { label: '停用', value: '1' },
   ]
   const { formConfig } = gridOptions
 
   if (formConfig && formConfig.items) {
     const sexItem = formConfig.items[1]
     if (sexItem && sexItem.itemRender) {
-      sexItem.itemRender.options = sexList
+      sexItem.itemRender.options = statusList
     }
   }
 })

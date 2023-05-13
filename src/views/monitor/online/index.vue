@@ -1,12 +1,17 @@
 <template>
   <div style="overflow: hidden; width: 100%; height: 100%;">
-    <vxe-grid ref='xGrid' v-bind="gridOptions"></vxe-grid>
+    <vxe-grid ref='xGrid' v-bind="gridOptions">
+      <template #login_status="{ row }">
+        <span><el-tag size='large'>在线</el-tag></span>
+        <span style="margin-left: 5px;"><el-tag type="warning" size='large'>本人</el-tag></span>
+      </template>
+    </vxe-grid>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
+import type { VXETable, VxeGridInstance, VxeGridListeners, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
 
 const serveApiUrl = 'https://api.vxetable.cn/demo'
@@ -27,7 +32,7 @@ const gridOptions = reactive<VxeGridProps>({
   // 行配置信息
   rowConfig: {
     // 自定义行数据唯一主键的字段名（默认自动生成）
-    keyField: 'id',
+    keyField: 'userId',
     // 当鼠标移到行时，是否要高亮当前行
     isHover: true
   },
@@ -67,79 +72,43 @@ const gridOptions = reactive<VxeGridProps>({
     titleOverflow: true,
     items: [
       {
-        field: 'name',
-        title: '名称',
+        field: 'username',
+        title: '用户账号',
         span: 6,
         itemRender: {
           name: '$input',
           props: {
-            placeholder: '请输入名称'
+            placeholder: '请输入用户账号'
           }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'deptName',
+        title: '所在部门',
         span: 6,
         itemRender: {
           name: '$select',
-          options: []
+          options: [],
+          props: {
+            placeholder: '请选择所在部门'
+          }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'loginLocation',
+        title: '登录地点',
         span: 6,
         itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
+          name: '$input',
+          props: {
+            placeholder: '请输入登录地点'
+          }
         }
       },
       // 功能
       {
         span: 6,
         align: 'center',
-        collapseNode: true,
         itemRender: {
           name: '$buttons', children: [
             {
@@ -161,22 +130,6 @@ const gridOptions = reactive<VxeGridProps>({
     ]
   },
   toolbarConfig: {
-    buttons: [
-      {
-        status: 'primary',
-        name: '新增'
-      },
-      {
-        status: 'primary',
-        name: '编辑'
-      },
-      // 删除选中行；会自动触发 ajax.delete 方法
-      {
-        code: 'delete',
-        status: 'primary',
-        name: '删除'
-      },
-    ],
     refresh: true, // 显示刷新按钮
     export: true, // 显示导出按钮
     zoom: true, // 显示全屏按钮
@@ -211,16 +164,14 @@ const gridOptions = reactive<VxeGridProps>({
             })
             // return Promise
             const list = [
-              { id: 10001, name: 'Test1' + form.name, nickname: 'T1', role: 'Develop', sex: '1', age: 28, address: 'Shenzhen' },
-              { id: 10002, name: 'Test2' + form.name, nickname: 'T2', role: 'Test', sex: '0', age: 22, address: 'Guangzhou' },
-              { id: 10003, name: 'Test3' + form.name, nickname: 'T3', role: 'PM', sex: '1', age: 32, address: 'Shanghai' },
-              { id: 10004, name: 'Test4' + form.name, nickname: 'T4', role: 'Designer', sex: '0', age: 23, address: 'Shenzhen' },
-              { id: 10005, name: 'Test5' + form.name, nickname: 'T5', role: 'Develop', sex: '0', age: 30, address: 'Shanghai' },
-              { id: 10006, name: 'Test6' + form.name, nickname: 'T6', role: 'Develop', sex: '0', age: 27, address: 'Shanghai' },
-              { id: 10007, name: 'Test7' + form.name, nickname: 'T7', role: 'Develop', sex: '1', age: 29, address: 'Shenzhen' },
-              { id: 10008, name: 'Test8' + form.name, nickname: 'T8', role: 'Develop', sex: '0', age: 32, address: 'Shanghai' },
-              { id: 10009, name: 'Test9' + form.name, nickname: 'T9', role: 'Develop', sex: '1', age: 30, address: 'Shenzhen' },
-              { id: 10010, name: 'Test10' + form.name, nickname: 'T10', role: 'Develop', sex: '0', age: 34, address: 'Shanghai' }
+              {
+                userId: 1, username: 'admin', nickname: '普通用户', deptName: '数据监测中心', loginIp: '192.168.102.123',
+                loginLocation: '江西省赣州市', loginTime: '2023-01-01 00:00:00'
+              },
+              {
+                userId: 2, username: 'admin', nickname: '普通用户', deptName: '数据监测中心', loginIp: '192.168.102.123',
+                loginLocation: '江西省赣州市', loginTime: '2023-01-01 00:00:00'
+              },
             ]
             resolve({
               records: list,
@@ -238,50 +189,57 @@ const gridOptions = reactive<VxeGridProps>({
   },
   columns: [
     {
-      type: 'checkbox',
-      width: 60,
-      align: "center",
-    },
-    {
+      title: '序号',
       type: 'seq',
       align: "center",
-      width: 60
+      minWidth: 60
     },
     {
-      field: 'name',
-      title: 'Name',
+      field: 'username',
+      title: '用户账号',
       align: "center",
-      minWidth: 100,
-      sortable: true,
+      minWidth: 120,
     },
     {
       field: 'nickname',
-      title: 'Nickname',
+      title: '用户昵称',
       align: "center",
-      minWidth: 100,
+      minWidth: 120,
     },
     {
-      field: 'age',
-      title: 'Age',
+      field: 'status',
+      title: '登录状态',
       align: "center",
-      minWidth: 80,
+      minWidth: 120,
+      slots: {
+        default: 'login_status',
+      },
     },
     {
-      field: 'sex',
-      title: 'Sex',
+      field: 'deptName',
+      title: '所在部门',
       align: "center",
-      minWidth: 80,
+      minWidth: 150,
     },
     {
-      field: 'describe',
-      title: 'Describe',
+      field: 'loginIp',
+      title: '登录IP',
       align: "center",
-      minWidth: 250,
+      minWidth: 180,
+    },
+    // userId: 2, username: 'admin', nickname: '普通用户', deptName: '数据监测中心', loginIp: '192.168.102.123',
+    // loginLocation: '江西省赣州市', loginTime: '2023-01-01 00:00:00'
+    {
+      field: 'loginLocation',
+      title: '登录地点',
+      align: "center",
+      minWidth: 180,
     },
     {
-      field: 'describe',
-      title: 'Describe',
-      width: 250,
+      field: 'loginTime',
+      title: '登录时间',
+      align: "center",
+      minWidth: 180,
     },
   ],
   checkboxConfig: {
@@ -293,8 +251,8 @@ const gridOptions = reactive<VxeGridProps>({
 
 onMounted(() => {
   const sexList = [
-    { label: '男', value: '0' },
-    { label: '女', value: '1' },
+    { label: '用户中心', value: '用户中心' },
+    { label: '数据监测中心', value: '数据监测中心' },
   ]
   const { formConfig } = gridOptions
 

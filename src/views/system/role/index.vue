@@ -1,6 +1,10 @@
 <template>
   <div style="overflow: hidden; width: 100%; height: 100%;">
-    <vxe-grid ref='xGrid' v-bind="gridOptions"></vxe-grid>
+    <vxe-grid ref='xGrid' v-bind="gridOptions">
+      <template #role_status="{ row }">
+        <el-tag size='large'>正常</el-tag>
+      </template>
+    </vxe-grid>
   </div>
 </template>
 
@@ -27,7 +31,7 @@ const gridOptions = reactive<VxeGridProps>({
   // 行配置信息
   rowConfig: {
     // 自定义行数据唯一主键的字段名（默认自动生成）
-    keyField: 'id',
+    keyField: 'roleId',
     // 当鼠标移到行时，是否要高亮当前行
     isHover: true
   },
@@ -67,72 +71,35 @@ const gridOptions = reactive<VxeGridProps>({
     titleOverflow: true,
     items: [
       {
-        field: 'name',
-        title: '名称',
+        field: 'roleName',
+        title: '角色名称',
         span: 6,
         itemRender: {
           name: '$input',
           props: {
-            placeholder: '请输入名称'
+            placeholder: '请输入角色名称'
           }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'status',
+        title: '角色状态',
         span: 6,
         itemRender: {
           name: '$select',
-          options: []
+          options: [],
+          props: { placeholder: '请选择角色状态' },
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'rolePerm',
+        title: '角色字符串',
         span: 6,
         itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
+          name: '$input',
+          props: {
+            placeholder: '请输入角色字符串'
+          }
         }
       },
       // 功能
@@ -211,16 +178,51 @@ const gridOptions = reactive<VxeGridProps>({
             })
             // return Promise
             const list = [
-              { id: 10001, name: 'Test1' + form.name, nickname: 'T1', role: 'Develop', sex: '1', age: 28, address: 'Shenzhen' },
-              { id: 10002, name: 'Test2' + form.name, nickname: 'T2', role: 'Test', sex: '0', age: 22, address: 'Guangzhou' },
-              { id: 10003, name: 'Test3' + form.name, nickname: 'T3', role: 'PM', sex: '1', age: 32, address: 'Shanghai' },
-              { id: 10004, name: 'Test4' + form.name, nickname: 'T4', role: 'Designer', sex: '0', age: 23, address: 'Shenzhen' },
-              { id: 10005, name: 'Test5' + form.name, nickname: 'T5', role: 'Develop', sex: '0', age: 30, address: 'Shanghai' },
-              { id: 10006, name: 'Test6' + form.name, nickname: 'T6', role: 'Develop', sex: '0', age: 27, address: 'Shanghai' },
-              { id: 10007, name: 'Test7' + form.name, nickname: 'T7', role: 'Develop', sex: '1', age: 29, address: 'Shenzhen' },
-              { id: 10008, name: 'Test8' + form.name, nickname: 'T8', role: 'Develop', sex: '0', age: 32, address: 'Shanghai' },
-              { id: 10009, name: 'Test9' + form.name, nickname: 'T9', role: 'Develop', sex: '1', age: 30, address: 'Shenzhen' },
-              { id: 10010, name: 'Test10' + form.name, nickname: 'T10', role: 'Develop', sex: '0', age: 34, address: 'Shanghai' }
+              {
+                roleId: 0, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                roleId: 2, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                roleId: 3, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                roleId: 4, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                roleId: 5, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                roleId: 1, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                roleId: 1, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                roleId: 1, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                roleId: 1, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
+                createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
             ]
             resolve({
               records: list,
@@ -241,47 +243,70 @@ const gridOptions = reactive<VxeGridProps>({
       type: 'checkbox',
       width: 60,
       align: "center",
+      fixed: 'left',
     },
     {
+      title: '序号',
       type: 'seq',
       align: "center",
       width: 60
     },
     {
-      field: 'name',
-      title: 'Name',
+      field: 'roleName',
+      title: '角色名称',
       align: "center",
-      minWidth: 100,
-      sortable: true,
+      width: 120,
     },
     {
-      field: 'nickname',
-      title: 'Nickname',
+      field: 'orderNum',
+      title: '显示顺序',
       align: "center",
-      minWidth: 100,
+      width: 120,
     },
     {
-      field: 'age',
-      title: 'Age',
+      field: 'rolePerm',
+      title: '权限字符串',
       align: "center",
-      minWidth: 80,
+      width: 120,
     },
     {
-      field: 'sex',
-      title: 'Sex',
+      field: 'status',
+      title: '角色状态',
       align: "center",
-      minWidth: 80,
+      width: 120,
+      slots: {
+        default: 'role_status',
+      },
     },
     {
-      field: 'describe',
-      title: 'Describe',
+      field: 'remark',
+      title: '备注',
       align: "center",
-      minWidth: 250,
+      width: 200,
     },
     {
-      field: 'describe',
-      title: 'Describe',
-      width: 250,
+      field: 'createBy',
+      title: '创建者',
+      align: "center",
+      width: 120,
+    },
+    {
+      field: 'createTime',
+      title: '创建时间',
+      align: "center",
+      width: 180,
+    },
+    {
+      field: 'updateBy',
+      title: '更新者',
+      align: "center",
+      width: 120,
+    },
+    {
+      field: 'updateTime',
+      title: '更新时间',
+      align: "center",
+      width: 180,
     },
   ],
   checkboxConfig: {
@@ -292,16 +317,16 @@ const gridOptions = reactive<VxeGridProps>({
 })
 
 onMounted(() => {
-  const sexList = [
-    { label: '男', value: '0' },
-    { label: '女', value: '1' },
+  const statusList = [
+    { label: '正常', value: '0' },
+    { label: '停用', value: '1' },
   ]
   const { formConfig } = gridOptions
 
   if (formConfig && formConfig.items) {
     const sexItem = formConfig.items[1]
     if (sexItem && sexItem.itemRender) {
-      sexItem.itemRender.options = sexList
+      sexItem.itemRender.options = statusList
     }
   }
 })

@@ -64,14 +64,14 @@ export const routes = [
         component: () => import('@/views/acquisition/collect/index.vue')
       },
       {
-        path: '/acquisition/analysis',
-        name: 'Analysis',
+        path: '/acquisition/location',
+        name: 'Location',
         hidden: false,
         meta: {
-          title: '统计分析',
-          icon: 'vxe-icon-chart-bar-y'
+          title: '站点分布',
+          icon: 'vxe-icon-location-fill'
         },
-        component: () => import('@/views/acquisition/analysis/index.vue')
+        component: () => import('@/views/acquisition/location/index.vue')
       },
       {
         path: '/acquisition/weatherStation',
@@ -192,6 +192,28 @@ export const routes = [
     ]
   },
   {
+    path: '/alert-push',
+    name: 'alertPush',
+    hidden: false,
+    meta: {
+      title: '预警推送',
+      icon: 'vxe-icon-flow-branch'
+    },
+    component: () => import('@/layout/index.vue'),
+    children: [
+      {
+        path: '/alert-push/push-alert',
+        name: 'pushAlert',
+        hidden: false,
+        meta: {
+          title: '预警信息推送',
+          icon: 'vxe-icon-envelope'
+        },
+        component: () => import('@/views/alertPush/pushAlert/index.vue')
+      },
+    ]
+  },
+  {
     path: '/alert-analysis',
     name: 'alertAnalysis',
     hidden: false,
@@ -220,28 +242,6 @@ export const routes = [
           icon: 'vxe-icon-search'
         },
         component: () => import('@/views/alertAnalysis/viewAlert/index.vue')
-      },
-    ]
-  },
-  {
-    path: '/alert-push',
-    name: 'alertPush',
-    hidden: false,
-    meta: {
-      title: '预警推送',
-      icon: 'vxe-icon-flow-branch'
-    },
-    component: () => import('@/layout/index.vue'),
-    children: [
-      {
-        path: '/alert-push/push-alert',
-        name: 'pushAlert',
-        hidden: false,
-        meta: {
-          title: '预警信息推送',
-          icon: 'vxe-icon-envelope'
-        },
-        component: () => import('@/views/alertPush/pushAlert/index.vue')
       },
     ]
   },
@@ -312,7 +312,7 @@ export const routes = [
         name: 'Cache',
         hidden: false,
         meta: {
-          title: '缓存列表',
+          title: '缓存字典',
           icon: 'vxe-icon-table'
         },
         component: () => import('@/views/monitor/cache/index.vue')

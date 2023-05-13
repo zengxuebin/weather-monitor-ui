@@ -1,6 +1,10 @@
 <template>
   <div style="overflow: hidden; width: 100%; height: 100%;">
-    <vxe-grid ref='xGrid' v-bind="gridOptions"></vxe-grid>
+    <vxe-grid ref='xGrid' v-bind="gridOptions">
+      <template #menu_status="{ row }">
+        <el-tag size='large'>正常</el-tag>
+      </template>
+    </vxe-grid>
   </div>
 </template>
 
@@ -8,8 +12,6 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
-
-const serveApiUrl = 'https://api.vxetable.cn/demo'
 
 const xGrid = ref<VxeGridInstance>()
 
@@ -27,7 +29,7 @@ const gridOptions = reactive<VxeGridProps>({
   // 行配置信息
   rowConfig: {
     // 自定义行数据唯一主键的字段名（默认自动生成）
-    keyField: 'id',
+    keyField: 'menuId',
     // 当鼠标移到行时，是否要高亮当前行
     isHover: true
   },
@@ -67,72 +69,87 @@ const gridOptions = reactive<VxeGridProps>({
     titleOverflow: true,
     items: [
       {
-        field: 'name',
-        title: '名称',
+        field: 'menuName',
+        title: '菜单名称',
         span: 6,
         itemRender: {
           name: '$input',
           props: {
-            placeholder: '请输入名称'
+            placeholder: '请输入菜单名称'
           }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'menuType',
+        title: '菜单类型',
         span: 6,
         itemRender: {
           name: '$select',
-          options: []
+          options: [],
+          props: { placeholder: '请选择菜单类型' },
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'visible',
+        title: '是否可见',
         span: 6,
         itemRender: {
           name: '$select',
-          options: []
+          options: [
+            { label: '是', value: '0' },
+            { label: '否', value: '1' },
+          ],
+          props: { placeholder: '请选择是否可见' },
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'status',
+        title: '菜单状态',
         span: 6,
         folding: true,
         itemRender: {
           name: '$select',
-          options: []
+          options: [
+            { label: '正常', value: '0' },
+            { label: '停用', value: '1' },
+          ],
+          props: { placeholder: '请选择菜单状态' },
         }
       },
       {
-        field: 'sex',
-        title: '性别',
-        span: 6,
+        field: 'path',
+        title: '路由地址',
         folding: true,
+        span: 6,
         itemRender: {
-          name: '$select',
-          options: []
+          name: '$input',
+          props: {
+            placeholder: '请输入路由地址'
+          }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
-        span: 6,
+        field: 'component',
+        title: '组件路径',
         folding: true,
+        span: 6,
         itemRender: {
-          name: '$select',
-          options: []
+          name: '$input',
+          props: {
+            placeholder: '请输入组件路径'
+          }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
-        span: 6,
+        field: 'perms',
+        title: '权限标识',
         folding: true,
+        span: 6,
         itemRender: {
-          name: '$select',
-          options: []
+          name: '$input',
+          props: {
+            placeholder: '请输入权限标识'
+          }
         }
       },
       // 功能
@@ -211,16 +228,67 @@ const gridOptions = reactive<VxeGridProps>({
             })
             // return Promise
             const list = [
-              { id: 10001, name: 'Test1' + form.name, nickname: 'T1', role: 'Develop', sex: '1', age: 28, address: 'Shenzhen' },
-              { id: 10002, name: 'Test2' + form.name, nickname: 'T2', role: 'Test', sex: '0', age: 22, address: 'Guangzhou' },
-              { id: 10003, name: 'Test3' + form.name, nickname: 'T3', role: 'PM', sex: '1', age: 32, address: 'Shanghai' },
-              { id: 10004, name: 'Test4' + form.name, nickname: 'T4', role: 'Designer', sex: '0', age: 23, address: 'Shenzhen' },
-              { id: 10005, name: 'Test5' + form.name, nickname: 'T5', role: 'Develop', sex: '0', age: 30, address: 'Shanghai' },
-              { id: 10006, name: 'Test6' + form.name, nickname: 'T6', role: 'Develop', sex: '0', age: 27, address: 'Shanghai' },
-              { id: 10007, name: 'Test7' + form.name, nickname: 'T7', role: 'Develop', sex: '1', age: 29, address: 'Shenzhen' },
-              { id: 10008, name: 'Test8' + form.name, nickname: 'T8', role: 'Develop', sex: '0', age: 32, address: 'Shanghai' },
-              { id: 10009, name: 'Test9' + form.name, nickname: 'T9', role: 'Develop', sex: '1', age: 30, address: 'Shenzhen' },
-              { id: 10010, name: 'Test10' + form.name, nickname: 'T10', role: 'Develop', sex: '0', age: 34, address: 'Shanghai' }
+              {
+                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', status: '0'
+              },
+              {
+                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+              {
+                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
+              },
+
             ]
             resolve({
               records: list,
@@ -241,48 +309,127 @@ const gridOptions = reactive<VxeGridProps>({
       type: 'checkbox',
       width: 60,
       align: "center",
+      fixed: 'left',
     },
     {
       type: 'seq',
+      title: '序号',
       align: "center",
       width: 60
     },
     {
-      field: 'name',
-      title: 'Name',
+      field: 'menuId',
+      title: '菜单编号',
       align: "center",
-      minWidth: 100,
-      sortable: true,
+      width: 120,
     },
     {
-      field: 'nickname',
-      title: 'Nickname',
+      field: 'menuName',
+      title: '菜单名称',
       align: "center",
-      minWidth: 100,
+      width: 150,
     },
     {
-      field: 'age',
-      title: 'Age',
+      field: 'parentId',
+      title: '父菜单编号',
       align: "center",
-      minWidth: 80,
+      width: 120,
     },
     {
-      field: 'sex',
-      title: 'Sex',
+      field: 'orderNum',
+      title: '显示顺序',
       align: "center",
-      minWidth: 80,
+      width: 120,
     },
     {
-      field: 'describe',
-      title: 'Describe',
+      field: 'path',
+      title: '路由地址',
       align: "center",
-      minWidth: 250,
+      width: 200,
     },
     {
-      field: 'describe',
-      title: 'Describe',
+      field: 'component',
+      title: '组件路径',
+      align: "center",
       width: 250,
     },
+    {
+      field: 'menuType',
+      title: '菜单类型',
+      align: "center",
+      width: 120,
+      formatter: ({ cellValue }) => {
+        if (cellValue === '0') {
+          return '目录'
+        }
+        if (cellValue === '1') {
+          return '菜单'
+        }
+        return '按钮'
+      }
+    },
+    {
+      field: 'visible',
+      title: '是否可见',
+      align: "center",
+      width: 120,
+      formatter: ({ cellValue }) => {
+        if (cellValue === '0') {
+          return '显示'
+        } else {
+          return '隐藏'
+        }
+      }
+    },
+    {
+      field: 'status',
+      title: '菜单状态',
+      align: "center",
+      width: 120,
+      slots: {
+        default: 'menu_status',
+      },
+    },
+    {
+      field: 'perms',
+      title: '权限标识',
+      align: "center",
+      width: 200,
+    },
+    {
+      field: 'icon',
+      title: '菜单图标',
+      align: "center",
+      width: 120,
+    },
+    {
+      field: 'createBy',
+      title: '创建者',
+      align: "center",
+      width: 120,
+    },
+    {
+      field: 'createTime',
+      title: '创建时间',
+      align: "center",
+      width: 180,
+    },
+    {
+      field: 'updateBy',
+      title: '更新者',
+      align: "center",
+      width: 120,
+    },
+    {
+      field: 'updateTime',
+      title: '更新时间',
+      align: "center",
+      width: 180,
+    },
+    // menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
+    // component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
+    // icon: 'Display',  createBy: 'admin', createTime: '2023-01-01 00:00:00',
+    // updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
   ],
   checkboxConfig: {
     reserve: true,
@@ -292,16 +439,16 @@ const gridOptions = reactive<VxeGridProps>({
 })
 
 onMounted(() => {
-  const sexList = [
-    { label: '男', value: '0' },
-    { label: '女', value: '1' },
+  const menuTypeList = [
+    { label: '目录', value: '0' },
+    { label: '菜单', value: '1' },
   ]
   const { formConfig } = gridOptions
 
   if (formConfig && formConfig.items) {
     const sexItem = formConfig.items[1]
     if (sexItem && sexItem.itemRender) {
-      sexItem.itemRender.options = sexList
+      sexItem.itemRender.options = menuTypeList
     }
   }
 })

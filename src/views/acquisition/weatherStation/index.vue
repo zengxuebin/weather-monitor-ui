@@ -27,7 +27,7 @@ const gridOptions = reactive<VxeGridProps>({
   // 行配置信息
   rowConfig: {
     // 自定义行数据唯一主键的字段名（默认自动生成）
-    keyField: 'id',
+    keyField: 'stationNo',
     // 当鼠标移到行时，是否要高亮当前行
     isHover: true
   },
@@ -67,79 +67,46 @@ const gridOptions = reactive<VxeGridProps>({
     titleOverflow: true,
     items: [
       {
-        field: 'name',
-        title: '名称',
+        field: 'stationProvince',
+        title: '所在省份',
         span: 6,
         itemRender: {
-          name: '$input',
+          name: '$select',
+          options: [
+            { label: '江西省', value: '江西省' }
+          ],
           props: {
-            placeholder: '请输入名称'
+            placeholder: '请选择所在省份',
+          },
+          defaultValue: '江西省'
+        }
+      },
+      {
+        field: 'stationName',
+        title: '所在城市',
+        span: 6,
+        itemRender: {
+          name: '$select',
+          options: [],
+          props: {
+            placeholder: '请选择所在城市',
           }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'stationType',
+        title: '站点类型',
         span: 6,
         itemRender: {
           name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
+          options: [],
+          props: { placeholder: '请选择站点类型' },
         }
       },
       // 功能
       {
         span: 6,
         align: 'center',
-        collapseNode: true,
         itemRender: {
           name: '$buttons', children: [
             {
@@ -211,16 +178,56 @@ const gridOptions = reactive<VxeGridProps>({
             })
             // return Promise
             const list = [
-              { id: 10001, name: 'Test1' + form.name, nickname: 'T1', role: 'Develop', sex: '1', age: 28, address: 'Shenzhen' },
-              { id: 10002, name: 'Test2' + form.name, nickname: 'T2', role: 'Test', sex: '0', age: 22, address: 'Guangzhou' },
-              { id: 10003, name: 'Test3' + form.name, nickname: 'T3', role: 'PM', sex: '1', age: 32, address: 'Shanghai' },
-              { id: 10004, name: 'Test4' + form.name, nickname: 'T4', role: 'Designer', sex: '0', age: 23, address: 'Shenzhen' },
-              { id: 10005, name: 'Test5' + form.name, nickname: 'T5', role: 'Develop', sex: '0', age: 30, address: 'Shanghai' },
-              { id: 10006, name: 'Test6' + form.name, nickname: 'T6', role: 'Develop', sex: '0', age: 27, address: 'Shanghai' },
-              { id: 10007, name: 'Test7' + form.name, nickname: 'T7', role: 'Develop', sex: '1', age: 29, address: 'Shenzhen' },
-              { id: 10008, name: 'Test8' + form.name, nickname: 'T8', role: 'Develop', sex: '0', age: 32, address: 'Shanghai' },
-              { id: 10009, name: 'Test9' + form.name, nickname: 'T9', role: 'Develop', sex: '1', age: 30, address: 'Shenzhen' },
-              { id: 10010, name: 'Test10' + form.name, nickname: 'T10', role: 'Develop', sex: '0', age: 34, address: 'Shanghai' }
+              {
+                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
+                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
+                stationHeight: 890.4, remark: ''
+              },
+              {
+                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
+                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
+                stationHeight: 890.4, remark: ''
+              },
+              {
+                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
+                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
+                stationHeight: 890.4, remark: ''
+              },
+              {
+                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
+                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
+                stationHeight: 890.4, remark: ''
+              },
+              {
+                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
+                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
+                stationHeight: 890.4, remark: ''
+              },
+              {
+                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
+                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
+                stationHeight: 890.4, remark: ''
+              },
+              {
+                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
+                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
+                stationHeight: 890.4, remark: ''
+              },
+              {
+                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
+                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
+                stationHeight: 890.4, remark: ''
+              },
+              {
+                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
+                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
+                stationHeight: 890.4, remark: ''
+              },
+              {
+                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
+                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
+                stationHeight: 890.4, remark: ''
+              },
             ]
             resolve({
               records: list,
@@ -241,47 +248,67 @@ const gridOptions = reactive<VxeGridProps>({
       type: 'checkbox',
       width: 60,
       align: "center",
+      fixed: 'left',
     },
     {
       type: 'seq',
+      title: '序号',
       align: "center",
       width: 60
     },
     {
-      field: 'name',
-      title: 'Name',
+      field: 'stationNo',
+      title: '站点号',
       align: "center",
-      minWidth: 100,
-      sortable: true,
+      width: 120,
     },
     {
-      field: 'nickname',
-      title: 'Nickname',
+      field: 'stationProvince',
+      title: '所在省份',
       align: "center",
-      minWidth: 100,
+      width: 120,
     },
     {
-      field: 'age',
-      title: 'Age',
+      field: 'stationCity',
+      title: '所在城市',
       align: "center",
-      minWidth: 80,
+      width: 120,
     },
     {
-      field: 'sex',
-      title: 'Sex',
+      field: 'stationName',
+      title: '站点名称',
       align: "center",
-      minWidth: 80,
+      width: 120,
     },
     {
-      field: 'describe',
-      title: 'Describe',
+      field: 'stationType',
+      title: '站点类型',
       align: "center",
-      minWidth: 250,
+      width: 120,
     },
     {
-      field: 'describe',
-      title: 'Describe',
-      width: 250,
+      field: 'stationLongitud',
+      title: '站点经度',
+      align: "center",
+      width: 150,
+    },
+    {
+      field: 'stationLatitude',
+      title: '站点纬度',
+      align: "center",
+      width: 150,
+    },
+    {
+      field: 'stationHeight',
+      title: '站点高度',
+      align: "center",
+      width: 150,
+    },
+    {
+      field: 'remark',
+      title: '备注',
+      align: "center",
+      width: 200,
     },
   ],
   checkboxConfig: {
@@ -292,16 +319,17 @@ const gridOptions = reactive<VxeGridProps>({
 })
 
 onMounted(() => {
-  const sexList = [
-    { label: '男', value: '0' },
-    { label: '女', value: '1' },
+  const stationTypeList = [
+    { label: '基准站', value: '基准站' },
+    { label: '基本站', value: '基本站' },
+    { label: '一般站', value: '一般站' },
   ]
   const { formConfig } = gridOptions
 
   if (formConfig && formConfig.items) {
-    const sexItem = formConfig.items[1]
+    const sexItem = formConfig.items[2]
     if (sexItem && sexItem.itemRender) {
-      sexItem.itemRender.options = sexList
+      sexItem.itemRender.options = stationTypeList
     }
   }
 })

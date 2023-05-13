@@ -9,8 +9,6 @@ import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
 
-const serveApiUrl = 'https://api.vxetable.cn/demo'
-
 const xGrid = ref<VxeGridInstance>()
 
 const gridOptions = reactive<VxeGridProps>({
@@ -27,7 +25,7 @@ const gridOptions = reactive<VxeGridProps>({
   // 行配置信息
   rowConfig: {
     // 自定义行数据唯一主键的字段名（默认自动生成）
-    keyField: 'id',
+    keyField: 'dataId',
     // 当鼠标移到行时，是否要高亮当前行
     isHover: true
   },
@@ -68,78 +66,41 @@ const gridOptions = reactive<VxeGridProps>({
     items: [
       {
         field: 'name',
-        title: '名称',
+        title: '站点名称',
+        span: 6,
+        itemRender: {
+          name: '$select',
+          options: [],
+          props: { placeholder: '请选择站点名称' },
+        }
+      },
+      {
+        field: 'windDirection',
+        title: '风向',
+        span: 6,
+        itemRender: {
+          name: '$select',
+          options: [],
+          props: { placeholder: '请选择风向' },
+        }
+      },
+      {
+        field: 'dataCollectDate',
+        title: '采集时间',
         span: 6,
         itemRender: {
           name: '$input',
           props: {
-            placeholder: '请输入名称'
-          }
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
+            type: "date",
+            placeholder: "选择时间",
+            disabledMethod: disabledDate,
+          },
         }
       },
       // 功能
       {
         span: 6,
         align: 'center',
-        collapseNode: true,
         itemRender: {
           name: '$buttons', children: [
             {
@@ -162,10 +123,6 @@ const gridOptions = reactive<VxeGridProps>({
   },
   toolbarConfig: {
     buttons: [
-      {
-        status: 'primary',
-        name: '新增'
-      },
       {
         status: 'primary',
         name: '采集'
@@ -215,16 +172,56 @@ const gridOptions = reactive<VxeGridProps>({
             })
             // return Promise
             const list = [
-              { id: 10001, name: 'Test1' + form.name, nickname: 'T1', role: 'Develop', sex: '1', age: 28, address: 'Shenzhen' },
-              { id: 10002, name: 'Test2' + form.name, nickname: 'T2', role: 'Test', sex: '0', age: 22, address: 'Guangzhou' },
-              { id: 10003, name: 'Test3' + form.name, nickname: 'T3', role: 'PM', sex: '1', age: 32, address: 'Shanghai' },
-              { id: 10004, name: 'Test4' + form.name, nickname: 'T4', role: 'Designer', sex: '0', age: 23, address: 'Shenzhen' },
-              { id: 10005, name: 'Test5' + form.name, nickname: 'T5', role: 'Develop', sex: '0', age: 30, address: 'Shanghai' },
-              { id: 10006, name: 'Test6' + form.name, nickname: 'T6', role: 'Develop', sex: '0', age: 27, address: 'Shanghai' },
-              { id: 10007, name: 'Test7' + form.name, nickname: 'T7', role: 'Develop', sex: '1', age: 29, address: 'Shenzhen' },
-              { id: 10008, name: 'Test8' + form.name, nickname: 'T8', role: 'Develop', sex: '0', age: 32, address: 'Shanghai' },
-              { id: 10009, name: 'Test9' + form.name, nickname: 'T9', role: 'Develop', sex: '1', age: 30, address: 'Shenzhen' },
-              { id: 10010, name: 'Test10' + form.name, nickname: 'T10', role: 'Develop', sex: '0', age: 34, address: 'Shanghai' }
+              {
+                id: 100, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
+                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
+                pm10: 76, no2: 12, o3: 43, co: 1
+              },
+              {
+                id: 101, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
+                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
+                pm10: 76, no2: 12, o3: 43, co: 1
+              },
+              {
+                id: 102, stationNo: '江西省南昌市景德镇站', dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
+                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
+                pm10: 76, no2: 12, o3: 43, co: 1
+              },
+              {
+                id: 103, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
+                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
+                pm10: 76, no2: 12, o3: 43, co: 1
+              },
+              {
+                id: 104, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
+                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
+                pm10: 76, no2: 12, o3: 43, co: 1
+              },
+              {
+                id: 105, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
+                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
+                pm10: 76, no2: 12, o3: 43, co: 1
+              },
+              {
+                id: 106, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
+                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
+                pm10: 76, no2: 12, o3: 43, co: 1
+              },
+              {
+                id: 107, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
+                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
+                pm10: 76, no2: 12, o3: 43, co: 1
+              },
+              {
+                id: 108, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
+                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
+                pm10: 76, no2: 12, o3: 43, co: 1
+              },
+              {
+                id: 109, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
+                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
+                pm10: 76, no2: 12, o3: 43, co: 1
+              },
             ]
             resolve({
               records: list,
@@ -245,47 +242,116 @@ const gridOptions = reactive<VxeGridProps>({
       type: 'checkbox',
       width: 60,
       align: "center",
+      fixed: 'left'
     },
     {
       type: 'seq',
+      title: '序号',
       align: "center",
       width: 60
     },
     {
-      field: 'name',
-      title: 'Name',
+      field: 'stationNo',
+      title: '气象站点',
       align: "center",
-      minWidth: 100,
+      width: 180,
+    },
+    {
+      field: 'dataCollectTime',
+      title: '数据采集时间',
+      align: "center",
+      width: 180,
       sortable: true,
     },
     {
-      field: 'nickname',
-      title: 'Nickname',
+      field: 'temperature',
+      title: '温度',
       align: "center",
-      minWidth: 100,
+      width: 100,
     },
     {
-      field: 'age',
-      title: 'Age',
+      field: 'humidity',
+      title: '湿度',
       align: "center",
-      minWidth: 80,
+      width: 100,
     },
     {
-      field: 'sex',
-      title: 'Sex',
+      field: 'pressure',
+      title: '气压',
       align: "center",
-      minWidth: 80,
+      width: 100,
     },
     {
-      field: 'describe',
-      title: 'Describe',
+      field: 'windSpeed',
+      title: '风速',
       align: "center",
-      minWidth: 250,
+      width: 100,
     },
     {
-      field: 'describe',
-      title: 'Describe',
-      width: 250,
+      field: 'windDirection',
+      title: '风向',
+      align: "center",
+      width: 100,
+    },
+    {
+      field: 'precipitation',
+      title: '降水量',
+      align: "center",
+      width: 100,
+    },
+    {
+      field: 'clouds',
+      title: '云量',
+      align: "center",
+      width: 100,
+    },
+    {
+      field: 'visibility',
+      title: '能见度',
+      align: "center",
+      width: 100,
+    },
+    {
+      field: 'precipitation',
+      title: '降水量',
+      align: "center",
+      width: 100,
+    },
+    {
+      field: 'aqi',
+      title: 'AQI',
+      align: "center",
+      width: 100,
+    },
+    {
+      field: 'pm25',
+      title: 'PM2.5',
+      align: "center",
+      width: 100,
+    },
+    {
+      field: 'pm10',
+      title: 'PM10',
+      align: "center",
+      width: 100,
+    },
+    {
+      field: 'no2',
+      title: 'NO2',
+      align: "center",
+      width: 100,
+    },
+    {
+      field: 'o3',
+      title: 'O3',
+      align: "center",
+      width: 100,
+    },
+    {
+      field: 'co',
+      title: 'CO',
+      align: "center",
+      width: 100,
     },
   ],
   checkboxConfig: {
@@ -295,10 +361,18 @@ const gridOptions = reactive<VxeGridProps>({
   },
 })
 
+
+
 onMounted(() => {
   const sexList = [
-    { label: '男', value: '0' },
-    { label: '女', value: '1' },
+    { label: '东北风', value: '东北风' },
+    { label: '东风', value: '东风' },
+    { label: '东南风', value: '东南风' },
+    { label: '南风', value: '南风' },
+    { label: '西南风', value: '西南风' },
+    { label: '西风', value: '西风' },
+    { label: '西北风', value: '西北风' },
+    { label: '北风', value: '北风' },
   ]
   const { formConfig } = gridOptions
 
@@ -308,7 +382,12 @@ onMounted(() => {
       sexItem.itemRender.options = sexList
     }
   }
+
 })
+
+function disabledDate({ date }: any) {
+  return date.getTime() > new Date().getTime()
+}
 </script>
 
 <style lang="scss" scoped></style>
