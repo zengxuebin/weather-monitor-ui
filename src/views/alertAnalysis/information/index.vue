@@ -2,7 +2,7 @@
   <div>
     <vxe-toolbar>
       <template #buttons>
-        <span style="font-size: 15px;">本次预警数据统计分析从2023-01-01至今</span>
+        <span style="font-size: 15px;">{{ dateRange }}</span>
       </template>
     </vxe-toolbar>
     <vxe-table :ref="xTable" round height="680" align="center" :row-config="{ isHover: true }"
@@ -57,6 +57,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import type { VxeButtonEvents, VxeTableInstance, VxeTablePropTypes } from 'vxe-table'
+import XEUtils from 'xe-utils'
 
 const xTable = ref<VxeTableInstance>()
 
@@ -112,10 +113,7 @@ const rowClassName: VxeTablePropTypes.RowClassName = ({ rowIndex }) => {
   return 'col-grey'
 }
 
-const openExportEvent: VxeButtonEvents.Click = () => {
-  const $table = xTable.value
-  $table?.openExport()
-}
+const dateRange = '数据自2023-01-01至' + XEUtils.toDateString(new Date(), 'yyyy-MM-dd')
 </script>
 
 <style lang="scss" scoped>

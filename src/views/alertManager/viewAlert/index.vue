@@ -2,7 +2,7 @@
   <div style="overflow: hidden; width: 100%; height: 100%;">
     <vxe-grid ref='xGrid' v-bind="gridOptions" v-on="gridEvent">
       <template #alertStatus="{ row }">
-        <el-tag size='large' type="warning">待推送</el-tag>
+        <el-tag size='large' type="warning">待发布</el-tag>
       </template>
     </vxe-grid>
     <el-dialog v-model="dialogVisible" title="预警详情" width="50%" align-center>
@@ -13,7 +13,7 @@
       </template>
       <el-row :gutter="20" style="margin-bottom: 10px;">
         <el-col :span="16">
-          <el-text class="title">高温橙色预警</el-text>
+          <span class="title">高温橙色预警</span>
         </el-col>
         <el-col :span="8" style="text-align: right;">
           2023-01-01 00:00:00
@@ -118,12 +118,17 @@ const gridOptions = reactive<VxeGridProps>({
         itemRender: {
           name: '$select',
           options: [
-            { label: '待推送', value: '1' }
+            { label: '已忽略', value: '-1' },
+            { label: '待处理', value: '0' },
+            { label: '已发布', value: '1' },
+            { label: '已推送', value: '2' },
+            { label: '已确认', value: '3' },
+            { label: '已解除', value: '4' },
+            { label: '已关闭', value: '5' },
           ],
           props: {
             placeholder: '请选择预警状态',
           },
-          defaultValue: '1'
         }
       },
       {
@@ -233,18 +238,6 @@ const gridOptions = reactive<VxeGridProps>({
     ]
   },
   toolbarConfig: {
-    buttons: [
-      {
-        status: 'primary',
-        name: '推送',
-        icon: 'vxe-icon-envelope-fill'
-      },
-      {
-        status: 'warning',
-        name: '忽略',
-        icon: 'vxe-icon-undo'
-      },
-    ],
     refresh: true, // 显示刷新按钮
     export: true, // 显示导出按钮
     zoom: true, // 显示全屏按钮
@@ -331,12 +324,6 @@ const gridOptions = reactive<VxeGridProps>({
     }
   },
   columns: [
-    {
-      type: 'checkbox',
-      width: 60,
-      align: "center",
-      fixed: 'left'
-    },
     {
       title: '序号',
       type: 'seq',
@@ -461,11 +448,11 @@ onMounted(() => {
 .titleClass {
   font-size: 30px;
   font-weight: lighter;
-  color: #1c1e21;
+  color: #000;
 }
 
 .main {
-  line-height: 25px;
+  line-height:25px;
   text-indent: 2em;
   font-size: 16px;
 }

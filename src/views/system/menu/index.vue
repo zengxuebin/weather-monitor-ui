@@ -163,13 +163,15 @@ const gridOptions = reactive<VxeGridProps>({
               props: {
                 type: 'submit',
                 content: '查询',
-                status: 'primary'
+                status: 'primary',
+                icon: 'vxe-icon-search',
               }
             },
             {
               props: {
                 type: 'reset',
-                content: '重置'
+                content: '重置',
+                icon: 'vxe-icon-repeat'
               }
             }
           ]
@@ -181,17 +183,20 @@ const gridOptions = reactive<VxeGridProps>({
     buttons: [
       {
         status: 'primary',
-        name: '新增'
+        name: '新增',
+        icon: 'vxe-icon-add'
       },
       {
         status: 'primary',
-        name: '编辑'
+        name: '编辑',
+        icon: 'vxe-icon-edit'
       },
       // 删除选中行；会自动触发 ajax.delete 方法
       {
         code: 'delete',
-        status: 'primary',
-        name: '删除'
+        status: 'danger',
+        name: '删除',
+        icon: 'vxe-icon-delete'
       },
     ],
     refresh: true, // 显示刷新按钮

@@ -115,13 +115,15 @@ const gridOptions = reactive<VxeGridProps>({
               props: {
                 type: 'submit',
                 content: '查询',
-                status: 'primary'
+                status: 'primary',
+                icon: 'vxe-icon-search',
               }
             },
             {
               props: {
                 type: 'reset',
-                content: '重置'
+                content: '重置',
+                icon: 'vxe-icon-repeat'
               }
             }
           ]

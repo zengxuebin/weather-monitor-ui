@@ -140,13 +140,15 @@ const gridOptions = reactive<VxeGridProps>({
               props: {
                 type: 'submit',
                 content: '查询',
-                status: 'primary'
+                status: 'primary',
+                icon: 'vxe-icon-search',
               }
             },
             {
               props: {
                 type: 'reset',
-                content: '重置'
+                content: '重置',
+                icon: 'vxe-icon-repeat'
               }
             }
           ]
@@ -293,8 +295,8 @@ const gridOptions = reactive<VxeGridProps>({
 
 const gridEvent: VxeGridListeners = {
   cellClick({ row, column }) {
-    console.log(row);
-    console.log(column);
+    console.log(row)
+    console.log(column)
     if (column.field == "dictType") {
       console.log('打开对话框')
       dictDataModal.visible = true

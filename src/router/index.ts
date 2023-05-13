@@ -181,13 +181,13 @@ export const routes = [
       },
       {
         path: '/alert-manager/view-alert',
-        name: 'viewPushAlert',
+        name: 'ViewAlert',
         hidden: false,
         meta: {
           title: '预警信息查询',
           icon: 'vxe-icon-search'
         },
-        component: () => import('@/views/alertPush/viewPushAlert/index.vue')
+        component: () => import('@/views/alertManager/viewAlert/index.vue')
       },
     ]
   },

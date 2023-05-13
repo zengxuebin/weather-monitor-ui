@@ -1,6 +1,18 @@
 <template>
   <div style="overflow: hidden; width: 100%; height: 100%;">
-    <vxe-grid ref='xGrid' v-bind="gridOptions"></vxe-grid>
+    <vxe-grid ref='xGrid' v-bind="gridOptions">
+      <template #alert_status="{ row }">
+        <el-tag size='large'>正常</el-tag>
+      </template>
+      <template #operator="{ row }">
+        <el-tag size='large' type="warning" v-if="row.operator === 'eq'">=</el-tag>
+        <el-tag size='large' type="warning" v-if="row.operator === 'ne'">!=</el-tag>
+        <el-tag size='large' type="warning" v-if="row.operator === 'gt'">></el-tag>
+        <el-tag size='large' type="warning" v-if="row.operator === 'lt'">&lt;</el-tag>
+        <el-tag size='large' type="warning" v-if="row.operator === 'ge'">>=</el-tag>
+        <el-tag size='large' type="warning" v-else>&lt;=</el-tag>
+      </template>
+    </vxe-grid>
   </div>
 </template>
 
@@ -26,6 +38,8 @@ const gridOptions = reactive<VxeGridProps>({
   exportConfig: {},
   // 行配置信息
   rowConfig: {
+    // 自定义行数据唯一主键的字段名（默认自动生成）
+    keyField: 'ruleId',
     // 当鼠标移到行时，是否要高亮当前行
     isHover: true
   },
@@ -65,92 +79,58 @@ const gridOptions = reactive<VxeGridProps>({
     titleOverflow: true,
     items: [
       {
-        field: 'name',
-        title: '名称',
+        field: 'ruleName',
+        title: '预警规则名称',
         span: 6,
         itemRender: {
           name: '$input',
           props: {
-            placeholder: '请输入名称'
+            placeholder: '请输入预警规则名称'
           }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'alertStatus',
+        title: '预警状态',
         span: 6,
         itemRender: {
           name: '$select',
-          options: []
+          options: [],
+          props: {
+            placeholder: '请选择预警状态'
+          }
         }
       },
       {
-        field: 'sex',
-        title: '性别',
+        field: 'metric',
+        title: '预警监测指标',
         span: 6,
         itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
-        }
-      },
-      {
-        field: 'sex',
-        title: '性别',
-        span: 6,
-        folding: true,
-        itemRender: {
-          name: '$select',
-          options: []
+          name: '$input',
+          props: {
+            placeholder: '请输入预警监测指标'
+          }
         }
       },
       // 功能
       {
         span: 6,
         align: 'center',
-        collapseNode: true,
         itemRender: {
           name: '$buttons', children: [
             {
               props: {
                 type: 'submit',
                 content: '查询',
-                status: 'primary'
+                status: 'primary',
+                icon: 'vxe-icon-search',
               }
             },
             {
               props: {
                 type: 'reset',
-                content: '重置'
+                content: '重置',
+                icon: 'vxe-icon-repeat'
               }
             }
           ]
@@ -162,17 +142,20 @@ const gridOptions = reactive<VxeGridProps>({
     buttons: [
       {
         status: 'primary',
-        name: '新增'
+        name: '新增',
+        icon: 'vxe-icon-add'
       },
       {
         status: 'primary',
-        name: '编辑'
+        name: '编辑',
+        icon: 'vxe-icon-edit'
       },
       // 删除选中行；会自动触发 ajax.delete 方法
       {
         code: 'delete',
-        status: 'primary',
-        name: '删除'
+        status: 'danger',
+        name: '删除',
+        icon: 'vxe-icon-delete'
       },
     ],
     refresh: true, // 显示刷新按钮
@@ -209,7 +192,41 @@ const gridOptions = reactive<VxeGridProps>({
             })
             // return Promise
             const list = [
-              { id: 10001, name: 'Test1' + form.name, nickname: 'T1', role: 'Develop', sex: '1', age: 28, address: 'Shenzhen' },
+              {
+                ruleId: 1001, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
+                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
+              },
+              {
+                ruleId: 1002, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
+                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
+              },
+              {
+                ruleId: 1003, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
+                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
+              },
+              {
+                ruleId: 1004, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
+                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
+              },
+              {
+                ruleId: 1005, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
+                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
+              },
+              {
+                ruleId: 1006, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
+                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
+              },
+              {
+                ruleId: 1007, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
+                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
+                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
+              },
             ]
             resolve({
               records: list,
@@ -230,47 +247,85 @@ const gridOptions = reactive<VxeGridProps>({
       type: 'checkbox',
       width: 60,
       align: "center",
+      fixed: 'left'
     },
     {
+      title: '序号',
       type: 'seq',
       align: "center",
       width: 60
     },
     {
-      field: 'name',
-      title: 'Name',
+      field: 'ruleName',
+      title: '预警规则名称',
       align: "center",
-      minWidth: 100,
-      sortable: true,
+      width: 150,
     },
     {
-      field: 'nickname',
-      title: 'Nickname',
+      field: 'metric',
+      title: '预警监测指标',
       align: "center",
-      minWidth: 100,
+      width: 150,
     },
     {
-      field: 'age',
-      title: 'Age',
+      field: 'operator',
+      title: '比较操作符',
       align: "center",
-      minWidth: 80,
+      width: 120,
+      slots: {
+        default: 'operator',
+      },
     },
     {
-      field: 'sex',
-      title: 'Sex',
+      field: 'threshold',
+      title: '预警触发阈值',
       align: "center",
-      minWidth: 80,
+      width: 120,
     },
     {
-      field: 'describe',
-      title: 'Describe',
+      field: 'alertStatus',
+      title: '预警状态',
       align: "center",
-      minWidth: 250,
+      width: 120,
+      slots: {
+        default: 'alert_status',
+      },
     },
     {
-      field: 'describe',
-      title: 'Describe',
+      field: 'ruleDesc',
+      title: '预警描述',
+      align: "center",
       width: 250,
+    },
+    {
+      field: 'createBy',
+      title: '创建者',
+      align: "center",
+      width: 120,
+    },
+    {
+      field: 'createTime',
+      title: '创建时间',
+      align: "center",
+      width: 180,
+    },
+    {
+      field: 'updateBy',
+      title: '更新者',
+      align: "center",
+      width: 120,
+    },
+    {
+      field: 'updateTime',
+      title: '更新时间',
+      align: "center",
+      width: 180,
+    },
+    {
+      field: 'remark',
+      title: '备注',
+      align: "center",
+      width: 200,
     },
   ],
   checkboxConfig: {
@@ -282,8 +337,8 @@ const gridOptions = reactive<VxeGridProps>({
 
 onMounted(() => {
   const sexList = [
-    { label: '男', value: '0' },
-    { label: '女', value: '1' },
+    { label: '正常', value: '0' },
+    { label: '停用', value: '1' },
   ]
   const { formConfig } = gridOptions
 
