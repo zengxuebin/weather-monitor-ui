@@ -118,13 +118,13 @@ const gridOptions = reactive<VxeGridProps>({
         itemRender: {
           name: '$select',
           options: [
-            { label: '已忽略', value: '-1' },
+            { label: '回退结束', value: '-1' },
             { label: '待处理', value: '0' },
-            { label: '已发布', value: '1' },
-            { label: '已推送', value: '2' },
-            { label: '已确认', value: '3' },
-            { label: '已解除', value: '4' },
-            { label: '已关闭', value: '5' },
+            { label: '待推送', value: '1' },
+            { label: '待确认', value: '2' },
+            { label: '待解除', value: '3' },
+            { label: '待关闭', value: '4' },
+            { label: '正常结束', value: '5' },
           ],
           props: {
             placeholder: '请选择预警状态',
