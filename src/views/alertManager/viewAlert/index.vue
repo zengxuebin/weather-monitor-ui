@@ -338,6 +338,13 @@ const gridOptions = reactive<VxeGridProps>({
       className: 'cell-click',
     },
     {
+      field: 'alertRuleId',
+      title: '关联预警规则',
+      align: "center",
+      width: 150,
+      className: 'cell-click'
+    },
+    {
       field: 'triggerValue',
       title: '触发预警监测值',
       align: "center",
@@ -357,12 +364,6 @@ const gridOptions = reactive<VxeGridProps>({
       title: '预警类型',
       align: "center",
       width: 120,
-    },
-    {
-      field: 'alertRuleId',
-      title: '触发预警规则',
-      align: "center",
-      width: 150,
     },
     {
       field: 'alertLevel',

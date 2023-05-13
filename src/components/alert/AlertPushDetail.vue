@@ -88,54 +88,155 @@
         </span>
       </div>
     </el-card>
-      <el-drawer v-model="detailDrawer" size="60%" :show-close="false" style="position: absolute">
-        <template #header>
-          <span class="detail-title">
-            <el-icon>
-              <HelpFilled />
-            </el-icon>
-            查看详情
-          </span>
-        </template>
-        <template #default>
-          <el-container style="height: 100%; overflow: hidden;">
-            <el-main style="padding: 0;">
-              <div class="sub-title">关联预警规则</div>
-              <div class="detail-main">正文部分</div>
-              <div class="sub-title">关联预警规则</div>
-              <div class="detail-main">正文部分</div>
-              <div class="sub-title">关联预警规则</div>
-              <div class="detail-main">正文部分</div>
-              <div class="sub-title">关联预警规则</div>
-              <div class="detail-main">正文部分</div>
-              <div class="sub-title">关联预警规则</div>
-              <div class="detail-main">正文部分</div>
-              <div class="sub-title">关联预警规则</div>
-              <div class="detail-main">正文部分</div>
-              <div class="sub-title">关联预警规则</div>
-              <div class="detail-main">正文部分</div>
-              <div class="sub-title">关联预警规则</div>
-              <div class="detail-main">正文部分</div>
-              <div class="sub-title">关联预警规则</div>
-              <div class="detail-main">正文部分</div>
-              <div class="sub-title">关联预警规则</div>
-              <div class="detail-main">正文部分</div>
-            </el-main>
-            <el-aside width="200px"><el-timeline>
-                <el-timeline-item v-for="(activity, index) in activities" :key="index" :color="activity.color"
-                  size="large" :timestamp="activity.timestamp">
-                  {{ activity.content }}
-                  <div v-if="activities.length > 0">
-                    <slot name="solt" v-if="activity.content === 'test'">
-                      <span>审批不通过</span>
-                    </slot>
-                  </div>
-                </el-timeline-item>
-              </el-timeline></el-aside>
-          </el-container>
+    <el-drawer v-model="detailDrawer" size="60%" :show-close="false" style="position: absolute">
+      <template #header>
+        <span class="detail-title">
+          <el-icon>
+            <HelpFilled />
+          </el-icon>
+          查看详情
+        </span>
+      </template>
+      <template #default>
+        <el-container style="height: 100%;">
+          <el-main style="padding: 0;">
+            <div class="sub-title">关联预警规则</div>
+            <div class="detail-main">
+              <el-descriptions :column="3" border>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      预警规则名称
+                    </div>
+                  </template>
+                  ddd
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      预警监测指标
+                    </div>
+                  </template>
+                  42
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      比较操作符
+                    </div>
+                  </template>
+                  >=
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      预警规则阈值
+                    </div>
+                  </template>
+                  <el-tag size="small">132</el-tag>
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      预警规则描述
+                    </div>
+                  </template>
+                  你好你好你好你好你好你好
+                </el-descriptions-item>
+              </el-descriptions>
+            </div>
+            <div class="sub-title">关联相关站点</div>
+            <div class="detail-main">
+              <el-descriptions :column="3" border>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      站点监测号
+                    </div>
+                  </template>
+                  36021
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      站点所在省份
+                    </div>
+                  </template>
+                  江西省
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      站点所在市
+                    </div>
+                  </template>
+                  南昌市
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      站点名称
+                    </div>
+                  </template>
+                  青山湖区
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      站点所在经度
+                    </div>
+                  </template>
+                  1823.1231
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      站点所在纬度
+                    </div>
+                  </template>
+                  1823.1231
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      站点所在高度
+                    </div>
+                  </template>
+                  841.1
+                </el-descriptions-item>
+                <el-descriptions-item>
+                  <template #label>
+                    <div>
+                      备注
+                    </div>
+                  </template>
+                </el-descriptions-item>
+              </el-descriptions>
+            </div>
+            <div class="sub-title">关联预警流程</div>
+            <div class="detail-main">
+              <el-table :data="tableData" style="width: 100%" border>
+                <el-table-column prop="date" label="Date" width="180" align="center" />
+                <el-table-column prop="name" label="Name" width="180" align="center" />
+                <el-table-column prop="address" label="Address" align="center" />
+              </el-table>
+            </div>
+          </el-main>
+          <el-aside width="200px"><el-timeline>
+              <el-timeline-item v-for="(activity, index) in activities" :key="index" :color="activity.color" size="large"
+                :timestamp="activity.timestamp">
+                {{ activity.content }}
+                <div v-if="activities.length > 0">
+                  <slot name="solt" v-if="activity.content === 'test'">
+                    <span>审批不通过</span>
+                  </slot>
+                </div>
+              </el-timeline-item>
+            </el-timeline></el-aside>
+        </el-container>
 
-        </template>
-      </el-drawer>
+      </template>
+    </el-drawer>
   </div>
 </template>
 
@@ -148,6 +249,29 @@ const detailDrawer = ref(false)
 const handleAlertDetails = (id: any) => {
   detailDrawer.value = true
 }
+
+const tableData = [
+  {
+    date: '2016-05-03',
+    name: 'Tom',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2016-05-02',
+    name: 'Tom',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2016-05-04',
+    name: 'Tom',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2016-05-01',
+    name: 'Tom',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+]
 
 const activities = [
   {
@@ -229,6 +353,6 @@ const activities = [
 }
 
 .detail-main {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 </style>
