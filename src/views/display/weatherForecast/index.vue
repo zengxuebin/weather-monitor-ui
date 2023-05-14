@@ -112,24 +112,24 @@ const gridOptions = reactive<VxeGridProps<RowVO>>({
   showOverflow: true,
   showHeader: false,
   columns: [
-    { field: 'col1', width: 100 },
-    { field: 'col2' },
-    { field: 'col3' },
-    { field: 'col4' },
-    { field: 'col5' },
-    { field: 'col6' },
-    { field: 'col7' },
+    { field: 'col1', width: 100, className: 'first-field', align: 'center' },
+    { field: 'col2', align: 'center' },
+    { field: 'col3', align: 'center' },
+    { field: 'col4', align: 'center' },
+    { field: 'col5', align: 'center' },
+    { field: 'col6', align: 'center' },
+    { field: 'col7', align: 'center' },
   ],
   data: [
-    { col1: 'Name', col2: 'Test1', col3: 'Test2', col4: 'Test3', col5: 'Test4', col6: 'Test5', col7: 'Test6' },
-    { col1: 'Role', col2: 'Develop', col3: 'PM', col4: 'Designer', col5: 'Test', col6: 'Designer', col7: 'Develop' },
-    { col1: 'Sex', col2: 'Man', col3: 'Women', col4: 'Man', col5: 'Women', col6: 'Man', col7: 'Women' },
-    { col1: 'Age', col2: '28', col3: '18', col4: '22', col5: '30', col6: '26', col7: '34' },
-    { col1: 'Address', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
-    { col1: 'Address', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
-    { col1: 'Address', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
-    { col1: 'Address', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
-    { col1: 'Address', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
+    { col1: '时间', col2: 'Test1', col3: 'Test2', col4: 'Test3', col5: 'Test4', col6: 'Test5', col7: 'Test6' },
+    { col1: '天气', col2: 'Develop', col3: 'PM', col4: 'Designer', col5: 'Test', col6: 'Designer', col7: 'Develop' },
+    { col1: '温度', col2: 'Man', col3: 'Women', col4: 'Man', col5: 'Women', col6: 'Man', col7: 'Women' },
+    { col1: '降水量', col2: '28', col3: '18', col4: '22', col5: '30', col6: '26', col7: '34' },
+    { col1: '风速', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
+    { col1: '风向', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
+    { col1: '气压', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
+    { col1: '湿度', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
+    { col1: '云量', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
   ]
 })
 </script>
@@ -138,4 +138,6 @@ const gridOptions = reactive<VxeGridProps<RowVO>>({
 .weather-item {
   border-radius: 0 0 4px 4px;
 }
+
+
 </style>

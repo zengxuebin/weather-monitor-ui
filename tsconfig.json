@@ -12,8 +12,8 @@
         "./src/*"
       ],
       "lib": ["ES2022"],
-      "noImplicitAny": false,
-      "allowJs": true,
+      "noImplicitAny": ["false"],
+      "allowJs": ["true"],
     },
     "typeRoots": ["./types"],
     "ignoreDeprecations": "5.0",

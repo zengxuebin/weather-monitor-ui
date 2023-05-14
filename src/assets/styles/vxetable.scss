@@ -31,5 +31,9 @@ $vxe-table-border-radius: 4px;
   cursor: pointer;
 }
 
+.first-field {
+  background-color: #f5f7fa;
+}
+
 // 引入vxe-table库的样式文件
 @import 'vxe-table/styles/index.scss';
