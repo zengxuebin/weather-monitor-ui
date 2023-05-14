@@ -34,6 +34,12 @@
 import TodayWeather from "@/components/weather/TodayWeather.vue"
 import TodayEcharts from "@/components/echarts/index.vue"
 import AirQuality from "@/components/weather/AirQuality.vue"
+import { getStationByCity } from "@/api/weatherStation"
+
+getStationByCity('赣州市').then(res => {
+  console.log(res);
+  
+})
 
 const options = {
   title: {
@@ -74,7 +80,7 @@ const options = {
       showSymbol: false,
     },
   ]
-};
+}
 </script>
 
 <style lang="scss" scoped>

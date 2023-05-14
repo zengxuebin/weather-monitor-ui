@@ -7,9 +7,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
+import { getPageStation, getAllCity } from "@/api/weatherStation"
 import XEUtils from 'xe-utils'
-
-const serveApiUrl = 'https://api.vxetable.cn/demo'
 
 const xGrid = ref<VxeGridInstance>()
 
@@ -82,7 +81,7 @@ const gridOptions = reactive<VxeGridProps>({
         }
       },
       {
-        field: 'stationName',
+        field: 'stationCity',
         title: '所在城市',
         span: 6,
         itemRender: {
@@ -167,78 +166,33 @@ const gridOptions = reactive<VxeGridProps>({
     // 接收 Promise API
     ajax: {
       // 当点击工具栏查询按钮或者手动提交指令 query或reload 时会被触发
-      query: ({ page, sorts, filters, form }) => {
+      query: ({ page, sorts, form }) => {
         return new Promise(resolve => {
-          setTimeout(() => {
-            const queryParams: any = Object.assign({}, form)
-            // 处理排序条件
-            const firstSort = sorts[0]
-            if (firstSort) {
-              queryParams.sort = firstSort.field
-              queryParams.order = firstSort.order
+          const queryParams: any = Object.assign({}, form)
+          // 处理排序条件
+          const firstSort = sorts[0]
+          if (firstSort) {
+            queryParams.sort = firstSort.field
+            queryParams.order = firstSort.order
+          }
+          // 请求参数
+          const data = {
+            pageNum: page.currentPage,
+            pageSize: page.pageSize,
+            entity: {
+              stationProvince: form.stationProvince,
+              stationCity: form.stationCity,
+              stationType: form.stationType,
             }
-            // 处理筛选条件
-            filters.forEach(({ field, values }) => {
-              queryParams[field] = values.join(',')
-            })
-            // return Promise
-            const list = [
-              {
-                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
-                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
-                stationHeight: 890.4, remark: ''
-              },
-              {
-                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
-                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
-                stationHeight: 890.4, remark: ''
-              },
-              {
-                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
-                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
-                stationHeight: 890.4, remark: ''
-              },
-              {
-                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
-                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
-                stationHeight: 890.4, remark: ''
-              },
-              {
-                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
-                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
-                stationHeight: 890.4, remark: ''
-              },
-              {
-                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
-                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
-                stationHeight: 890.4, remark: ''
-              },
-              {
-                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
-                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
-                stationHeight: 890.4, remark: ''
-              },
-              {
-                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
-                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
-                stationHeight: 890.4, remark: ''
-              },
-              {
-                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
-                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
-                stationHeight: 890.4, remark: ''
-              },
-              {
-                stationNo: 10001, stationProvince: '江西省', stationCity: '南昌市', stationName: '南昌',
-                stationType: '基本站', stationLongitud: '115.892151', stationLatitude: '115.892151',
-                stationHeight: 890.4, remark: ''
-              },
-            ]
+          }
+          // 调用方法
+          getPageStation(data).then(res => {
+            const data = res.data
             resolve({
-              records: list,
-              total: page.pageSize * 20
+              records: data.records,
+              total: data.total
             })
-          }, 500)
+          })
         })
       },
       delete: ({ body }) => {
@@ -292,7 +246,7 @@ const gridOptions = reactive<VxeGridProps>({
       width: 120,
     },
     {
-      field: 'stationLongitud',
+      field: 'stationLongitude',
       title: '站点经度',
       align: "center",
       width: 150,
@@ -324,17 +278,35 @@ const gridOptions = reactive<VxeGridProps>({
 })
 
 onMounted(() => {
+
+  const { formConfig } = gridOptions
+
   const stationTypeList = [
     { label: '基准站', value: '基准站' },
     { label: '基本站', value: '基本站' },
     { label: '一般站', value: '一般站' },
   ]
-  const { formConfig } = gridOptions
+  getAllCity().then(res => {
+    const data = res.data
+    let stationCityList: any[] = []
+    data.forEach((item: any) => {
+      stationCityList.push({
+        label: item.station_city,
+        value: item.station_city
+      })
+    })
+    if (formConfig && formConfig.items) {
+      const stationCityItem = formConfig.items[1]
+      if (stationCityItem && stationCityItem.itemRender) {
+        stationCityItem.itemRender.options = stationCityList
+      }
+    }
+  })
 
   if (formConfig && formConfig.items) {
-    const sexItem = formConfig.items[2]
-    if (sexItem && sexItem.itemRender) {
-      sexItem.itemRender.options = stationTypeList
+    const stationTypeItem = formConfig.items[2]
+    if (stationTypeItem && stationTypeItem.itemRender) {
+      stationTypeItem.itemRender.options = stationTypeList
     }
   }
 })

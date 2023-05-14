@@ -6,8 +6,26 @@
 
 <script setup lang="ts">
 import MapEchart from "@/components/echarts/index.vue"
+import { getAllStation } from "@/api/weatherStation";
+import { ref } from "vue";
 
-const mapOption = {
+let geoCoordMap = ref<any[]>([]);
+
+getAllStation().then(res => {
+  const data = res.data
+  data.forEach((item: any) => {
+    geoCoordMap.value.push({
+      name: item.stationName,
+      value: [
+        item.stationLatitude,
+        item.stationLongitude,
+        item.stationType,
+      ]
+    })
+  })
+})
+
+const mapOption = ref({
   geo: {
     map: 'JiangXi',
     top: 0,
@@ -18,13 +36,29 @@ const mapOption = {
     },
     itemStyle: {
       areaColor: '#e8f2f0',
-      emphasis: {
+    },
+    emphasis: {
+      itemStyle: {
         areaColor: '#e8f2f0',
         borderColor: '#cdcdcd',
-      },
+      }
     },
   },
-}
+
+  tooltip: {
+    trigger: 'item'
+  },
+  bmap: {
+  },
+  series: [
+    {
+      name: 'pm2.5',
+      type: 'scatter',
+      coordinateSystem: 'bmap',
+      data: geoCoordMap.value,
+    },
+  ]
+})
 </script>
 
 <style lang="scss" scoped>

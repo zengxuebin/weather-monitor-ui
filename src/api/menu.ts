@@ -10,3 +10,15 @@ export const getRouters = () => {
     url: '/auth/getRouters'
   })
 }
+
+/**
+ * 分页获取菜单
+ * @returns 分页菜单列表
+ */
+export const getPageMenu = (data: any) => {
+  return request({
+    method: 'post',
+    url: '/system/menu/page',
+    data
+  })
+}

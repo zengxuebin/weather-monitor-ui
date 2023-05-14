@@ -12,6 +12,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
+import { getPageRole } from "@/api/role"
 
 const serveApiUrl = 'https://api.vxetable.cn/demo'
 
@@ -106,7 +107,6 @@ const gridOptions = reactive<VxeGridProps>({
       {
         span: 6,
         align: 'center',
-        collapseNode: true,
         itemRender: {
           name: '$buttons', children: [
             {
@@ -169,71 +169,35 @@ const gridOptions = reactive<VxeGridProps>({
       // 当点击工具栏查询按钮或者手动提交指令 query或reload 时会被触发
       query: ({ page, sorts, filters, form }) => {
         return new Promise(resolve => {
-          setTimeout(() => {
-            const queryParams: any = Object.assign({}, form)
-            // 处理排序条件
-            const firstSort = sorts[0]
-            if (firstSort) {
-              queryParams.sort = firstSort.field
-              queryParams.order = firstSort.order
+          const queryParams: any = Object.assign({}, form)
+          // 处理排序条件
+          const firstSort = sorts[0]
+          if (firstSort) {
+            queryParams.sort = firstSort.field
+            queryParams.order = firstSort.order
+          }
+          // 处理筛选条件
+          filters.forEach(({ field, values }) => {
+            queryParams[field] = values.join(',')
+          })
+
+          // 请求参数
+          const data = {
+            pageNum: page.currentPage,
+            pageSize: page.pageSize,
+            entity: {
             }
-            // 处理筛选条件
-            filters.forEach(({ field, values }) => {
-              queryParams[field] = values.join(',')
-            })
-            // return Promise
-            const list = [
-              {
-                roleId: 0, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                roleId: 2, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                roleId: 3, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                roleId: 4, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                roleId: 5, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                roleId: 1, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                roleId: 1, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                roleId: 1, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                roleId: 1, roleName: '超级管理员', orderNum: 1, rolePerm: 'admin', status: 0,
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-            ]
+          }
+          console.log(data);
+
+          // 调用方法
+          getPageRole(data).then(res => {
+            const data = res.data
             resolve({
-              records: list,
-              total: page.pageSize * 20
+              records: data.records,
+              total: data.total
             })
-          }, 500)
+          })
         })
       },
       delete: ({ body }) => {
@@ -284,12 +248,6 @@ const gridOptions = reactive<VxeGridProps>({
       },
     },
     {
-      field: 'remark',
-      title: '备注',
-      align: "center",
-      width: 200,
-    },
-    {
       field: 'createBy',
       title: '创建者',
       align: "center",
@@ -312,6 +270,12 @@ const gridOptions = reactive<VxeGridProps>({
       title: '更新时间',
       align: "center",
       width: 180,
+    },
+    {
+      field: 'remark',
+      title: '备注',
+      align: "center",
+      width: 200,
     },
   ],
   checkboxConfig: {

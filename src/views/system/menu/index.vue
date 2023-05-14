@@ -12,6 +12,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
+import { getPageMenu } from "@/api/menu"
 
 const xGrid = ref<VxeGridInstance>()
 
@@ -219,87 +220,33 @@ const gridOptions = reactive<VxeGridProps>({
       // 当点击工具栏查询按钮或者手动提交指令 query或reload 时会被触发
       query: ({ page, sorts, filters, form }) => {
         return new Promise(resolve => {
-          setTimeout(() => {
-            const queryParams: any = Object.assign({}, form)
-            // 处理排序条件
-            const firstSort = sorts[0]
-            if (firstSort) {
-              queryParams.sort = firstSort.field
-              queryParams.order = firstSort.order
-            }
-            // 处理筛选条件
-            filters.forEach(({ field, values }) => {
-              queryParams[field] = values.join(',')
-            })
-            // return Promise
-            const list = [
-              {
-                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
-                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
-                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', status: '0'
-              },
-              {
-                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
-                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
-                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
-                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
-                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
-                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
-                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
-                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
-                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
-                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
-                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
-                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
-                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
-                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
-                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
-                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
-                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                menuId: '120', menuName: '预警统计分析', parentId: '1', orderNum: '0', path: '/weather-foreast',
-                component: '/display/weatherForeast/index', menuType: '2', visible: '0', perms: 'display:weather',
-                icon: 'Display', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
+          const queryParams: any = Object.assign({}, form)
+          // 处理排序条件
+          const firstSort = sorts[0]
+          if (firstSort) {
+            queryParams.sort = firstSort.field
+            queryParams.order = firstSort.order
+          }
 
-            ]
+          // 请求参数
+          const data = {
+            pageNum: page.currentPage,
+            pageSize: page.pageSize,
+            entity: {
+              menuName: form.menuName,
+              menuType: form.menuType,
+              visible: form.visible,
+            }
+          }
+          // 调用方法
+          getPageMenu(data).then(res => {
+            const data = res.data
             resolve({
-              records: list,
-              total: page.pageSize * 20
+              records: data.records,
+              total: data.total
             })
-          }, 500)
+          })
+
         })
       },
       delete: ({ body }) => {

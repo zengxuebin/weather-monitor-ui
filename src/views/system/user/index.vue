@@ -8,6 +8,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
+import { getPageUser } from "@/api/user"
 
 const xGrid = ref<VxeGridInstance>()
 
@@ -24,6 +25,8 @@ const gridOptions = reactive<VxeGridProps>({
   exportConfig: {},
   // 行配置信息
   rowConfig: {
+    // 自定义行数据唯一主键的字段名（默认自动生成）
+    keyField: 'userId',
     // 当鼠标移到行时，是否要高亮当前行
     isHover: true
   },
@@ -128,7 +131,10 @@ const gridOptions = reactive<VxeGridProps>({
           options: [
             { label: '数据监测中心', value: '数据监测中心' },
             { label: '用户中心', value: '用户中心' },
-          ]
+          ],
+          props: {
+            placeholder: '请选择所在部门'
+          }
         }
       },
       {
@@ -202,76 +208,33 @@ const gridOptions = reactive<VxeGridProps>({
       // 当点击工具栏查询按钮或者手动提交指令 query或reload 时会被触发
       query: ({ page, sorts, filters, form }) => {
         return new Promise(resolve => {
-          setTimeout(() => {
-            const queryParams: any = Object.assign({}, form)
-            // 处理排序条件
-            const firstSort = sorts[0]
-            if (firstSort) {
-              queryParams.sort = firstSort.field
-              queryParams.order = firstSort.order
+          const queryParams: any = Object.assign({}, form)
+
+          console.log(page);
+
+          // 处理排序条件
+          const firstSort = sorts[0]
+          if (firstSort) {
+            queryParams.sort = firstSort.field
+            queryParams.order = firstSort.order
+          }
+          // 请求参数
+          const data = {
+            pageNum: page.currentPage,
+            pageSize: page.pageSize,
+            entity: {
             }
-            // 处理筛选条件
-            filters.forEach(({ field, values }) => {
-              queryParams[field] = values.join(',')
-            })
-            // return Promise
-            const list = [
-              {
-                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
-                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
-                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
-                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
-                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
-                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
-                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
-                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
-                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
-                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-              {
-                username: 'admin', nickname: '超级管理员', password: '1asvbfjkasvfj', phone: '13979799217', email: '123456@qq.com',
-                deptName: '数据监测中心', sex: '0', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00',
-              },
-            ]
+          }
+          console.log(data);
+          
+          // 调用方法
+          getPageUser(data).then(res => {
+            const data = res.data
             resolve({
-              records: list,
-              total: page.pageSize * 20
+              records: data.records,
+              total: data.total
             })
-          }, 500)
+          })
         })
       },
       delete: ({ body }) => {
@@ -325,17 +288,24 @@ const gridOptions = reactive<VxeGridProps>({
       width: 180,
     },
     {
-      field: 'deptName',
+      field: 'deptId',
       title: '所在部门',
       align: "center",
       width: 150,
+      formatter: ({ cellValue }) => {
+        if (cellValue == '100') {
+          return '数据监测中心'
+        } else {
+          return '用户中心'
+        }
+      }
     },
     {
       field: 'sex',
       title: '性别',
       align: "center",
       width: 80,
-      formatter: ({ cellValue}) => {
+      formatter: ({ cellValue }) => {
         if (cellValue === '0') {
           return '男'
         }

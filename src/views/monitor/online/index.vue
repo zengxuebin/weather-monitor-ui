@@ -3,7 +3,8 @@
     <vxe-grid ref='xGrid' v-bind="gridOptions">
       <template #login_status="{ row }">
         <span><el-tag size='large'>在线</el-tag></span>
-        <span style="margin-left: 5px;"><el-tag type="warning" size='large'>本人</el-tag></span>
+        <span style="margin-left: 5px;"><el-tag type="warning" size='large'
+            v-if="userStore.user.userId === row.userId">本人</el-tag></span>
       </template>
     </vxe-grid>
   </div>
@@ -13,8 +14,10 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridListeners, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
+import { getPageOnlineUser } from "@/api/user"
+import useUserStore from "@/stores/user"
 
-const serveApiUrl = 'https://api.vxetable.cn/demo'
+const userStore = useUserStore()
 
 const xGrid = ref<VxeGridInstance>()
 
@@ -152,34 +155,34 @@ const gridOptions = reactive<VxeGridProps>({
       // 当点击工具栏查询按钮或者手动提交指令 query或reload 时会被触发
       query: ({ page, sorts, filters, form }) => {
         return new Promise(resolve => {
-          setTimeout(() => {
-            const queryParams: any = Object.assign({}, form)
-            // 处理排序条件
-            const firstSort = sorts[0]
-            if (firstSort) {
-              queryParams.sort = firstSort.field
-              queryParams.order = firstSort.order
+          const queryParams: any = Object.assign({}, form)
+          // 处理排序条件
+          const firstSort = sorts[0]
+          if (firstSort) {
+            queryParams.sort = firstSort.field
+            queryParams.order = firstSort.order
+          }
+          // 处理筛选条件
+          filters.forEach(({ field, values }) => {
+            queryParams[field] = values.join(',')
+          })
+
+          // 请求参数
+          const data = {
+            pageNum: page.currentPage,
+            pageSize: page.pageSize,
+            entity: {
             }
-            // 处理筛选条件
-            filters.forEach(({ field, values }) => {
-              queryParams[field] = values.join(',')
-            })
-            // return Promise
-            const list = [
-              {
-                userId: 1, username: 'admin', nickname: '普通用户', deptName: '数据监测中心', loginIp: '192.168.102.123',
-                loginLocation: '江西省赣州市', loginTime: '2023-01-01 00:00:00'
-              },
-              {
-                userId: 2, username: 'admin', nickname: '普通用户', deptName: '数据监测中心', loginIp: '192.168.102.123',
-                loginLocation: '江西省赣州市', loginTime: '2023-01-01 00:00:00'
-              },
-            ]
+          }
+          console.log(data);
+          // 调用方法
+          getPageOnlineUser(data).then(res => {
+            const data = res.data
             resolve({
-              records: list,
-              total: page.pageSize * 20
+              records: data.records,
+              total: data.total
             })
-          }, 500)
+          })
         })
       },
       delete: ({ body }) => {
@@ -218,10 +221,17 @@ const gridOptions = reactive<VxeGridProps>({
       },
     },
     {
-      field: 'deptName',
+      field: 'deptId',
       title: '所在部门',
       align: "center",
       minWidth: 150,
+      formatter: ({ cellValue }) => {
+        if (cellValue == '100') {
+          return '数据监测中心'
+        } else {
+          return '用户中心'
+        }
+      }
     },
     {
       field: 'loginIp',

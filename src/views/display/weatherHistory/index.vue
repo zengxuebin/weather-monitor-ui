@@ -3,7 +3,7 @@
 
     <el-row style="margin: 10px 0;">
       <el-col :span="7" style="padding-top: 8px;">
-        <span style="font-weight: bold;">当前所在地：</span> 江西省 南昌市 青山湖区
+        <span style="font-weight: bold;">当前所在地：</span> 江西省 南昌市
         <el-popover placement="bottom" :width="400" trigger="click">
           <template #reference>
             <a @click="">[切换]</a>
@@ -80,11 +80,11 @@
           </el-statistic>
         </el-col>
         <el-col :span="4" class="statistic-card">
-          <el-statistic :value="bestAir" value-style="color: #23cc72">
+          <el-statistic :value="maxVisible" value-style="color: #23cc72">
             <template #title>
               <div style="display: inline-flex; align-items: center; font-size: 14px;">
-                空气最好
-                <el-tooltip effect="dark" content="给定时间内的空气最好的指数" placement="top">
+                能见度最高
+                <el-tooltip effect="dark" content="给定时间内的能见度最高的指数" placement="top">
                   <el-icon style="margin-left: 4px" :size="12">
                     <Warning />
                   </el-icon>
@@ -94,10 +94,10 @@
           </el-statistic>
         </el-col>
         <el-col :span="4" class="statistic-card">
-          <el-statistic :value="badAir" value-style="color: #f6bd0e">
+          <el-statistic :value="maxWindspeed" value-style="color: #f6bd0e">
             <template #title>
               <div style="display: inline-flex; align-items: center; font-size: 14px;">
-                空气最好
+                风速最大
                 <el-tooltip effect="dark" content="给定时间内的空气最差的指数" placement="top">
                   <el-icon style="margin-left: 4px" :size="12">
                     <Warning />
@@ -142,12 +142,12 @@ const tableData = [
 ]
 
 const value = ref<[Date, Date]>([
-  new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+  new Date(new Date().getTime() - 16 * 24 * 60 * 60 * 1000),
   new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
 ])
 
-const bestAir = '22 优'
-const badAir = '34 良'
+const maxVisible = '19.6'
+const maxWindspeed = '18.9'
 
 const disabledDate = (date: Date) => {
   return date.getTime() > new Date().getTime()

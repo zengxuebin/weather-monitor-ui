@@ -24,7 +24,7 @@
           </vxe-column>
           <vxe-column field="isDefault" title="是否默认" minWidth="120" align="center">
             <template #default="{ row }">
-              <el-tag size='large' v-if="row.isDefault === '0'">是</el-tag>
+              <el-tag size='large' v-if="row.isDefault === 'Y'">是</el-tag>
               <el-tag size='large' type="warning" v-else>否</el-tag>
             </template>
           </vxe-column>
@@ -38,8 +38,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { VxeGridInstance, VxeGridListeners, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
-
-const serveApiUrl = 'https://api.vxetable.cn/demo'
+import { getPageDict, getDictDataListByDictType } from "@/api/dict"
 
 const xGrid = ref<VxeGridInstance>()
 
@@ -177,46 +176,37 @@ const gridOptions = reactive<VxeGridProps>({
       // 当点击工具栏查询按钮或者手动提交指令 query或reload 时会被触发
       query: ({ page, sorts, filters, form }) => {
         return new Promise(resolve => {
-          setTimeout(() => {
-            const queryParams: any = Object.assign({}, form)
-            // 处理排序条件
-            const firstSort = sorts[0]
-            if (firstSort) {
-              queryParams.sort = firstSort.field
-              queryParams.order = firstSort.order
+          const queryParams: any = Object.assign({}, form)
+          // 处理排序条件
+          const firstSort = sorts[0]
+          if (firstSort) {
+            queryParams.sort = firstSort.field
+            queryParams.order = firstSort.order
+          }
+          // 处理筛选条件
+          filters.forEach(({ field, values }) => {
+            queryParams[field] = values.join(',')
+          })
+
+          // 请求参数
+          const data = {
+            pageNum: page.currentPage,
+            pageSize: page.pageSize,
+            entity: {
+              dictName: form.dictName,
+              status: form.status,
+              dictType: form.dictType,
             }
-            // 处理筛选条件
-            filters.forEach(({ field, values }) => {
-              queryParams[field] = values.join(',')
-            })
-            // return Promise
-            const list = [
-              {
-                dictId: 1, dictName: '用户性别', dictType: 'sys_user_sex', status: '0',
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: '用户性别列表'
-              },
-              {
-                dictId: 2, dictName: '用户性别', dictType: 'sys_user_sex', status: '0',
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: '用户性别列表'
-              },
-              {
-                dictId: 3, dictName: '用户性别', dictType: 'sys_user_sex', status: '0',
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: '用户性别列表'
-              },
-              {
-                dictId: 4, dictName: '用户性别', dictType: 'sys_user_sex', status: '0',
-                createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: '用户性别列表'
-              },
-            ]
+          }
+          console.log(data);
+          // 调用方法
+          getPageDict(data).then(res => {
+            const data = res.data
             resolve({
-              records: list,
-              total: page.pageSize * 20
+              records: data.records,
+              total: data.total
             })
-          }, 500)
+          })
         })
       },
       delete: ({ body }) => {
@@ -299,33 +289,17 @@ const gridEvent: VxeGridListeners = {
     console.log(column)
     if (column.field == "dictType") {
       console.log('打开对话框')
-      dictDataModal.visible = true
+      getDictDataListByDictType(row.dictType).then(res => {
+        dictDataModal.tableData = res.data
+        dictDataModal.visible = true
+      })
     }
   },
 }
 
 const dictDataModal = reactive({
   visible: false,
-  tableData: [
-    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
-    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
-    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
-    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
-    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
-    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
-    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
-    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
-    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
-    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
-    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
-    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
-    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
-    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
-    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
-    { dictCode: 1, dictLabel: '男', dictValue: '0', orderNum: '1', status: '0', isDefault: '0' },
-    { dictCode: 2, dictLabel: '女', dictValue: '1', orderNum: '2', status: '0', isDefault: '1' },
-    { dictCode: 3, dictLabel: '未知', dictValue: '2', orderNum: '3', status: '0', isDefault: '1' },
-  ],
+  tableData: [],
 })
 
 onMounted(() => {
