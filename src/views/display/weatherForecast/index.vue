@@ -3,51 +3,51 @@
     <el-row>
       <el-col :span="24" style="height: 100%;">
         <Title :title="weatherTitle"></Title>
-        <div style="margin: 10px 0;">
-          <span style="font-weight: bold;">当前所在地：</span> 江西省 南昌市 青山湖区
-          <el-popover placement="bottom" :width="400" trigger="click">
-            <template #reference>
-              <a @click="ddd">[切换]</a>
-            </template>
-            <el-table :data="gridData">
-              <el-table-column width="150" property="date" label="date" />
-              <el-table-column width="100" property="name" label="name" />
-              <el-table-column width="300" property="address" label="address" />
-            </el-table>
-          </el-popover>
+        <div style="margin: 20px 0;">
+          <span style="font-weight: bold;">当前所在地：</span> 江西省
+          <div class="location-item">
+            <el-dropdown trigger="click" @command="handleCity">
+              <span class="el-dropdown-link">
+                {{ nowCity }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <template v-for="item in cityList" :key="item.value">
+                    <el-dropdown-item :command="item.value">{{ item.label }}</el-dropdown-item>
+                  </template>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+          <div class="location-item">
+            <el-dropdown trigger="click" ref="cityDropdown" @command="handleWeather">
+              <span class="el-dropdown-link">
+                {{ nowStation }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <template v-for="item in stationList" :key="item.value">
+                    <el-dropdown-item :command="item.value + '/' + item.label">{{ item.label }}</el-dropdown-item>
+                  </template>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
         </div>
         <el-tabs v-model="activeName" class="weather-item" @tab-click="handleClick" type="border-card">
-          <el-tab-pane :label="oneDay" name="first1">
-            <vxe-grid class="reverse-table" v-bind="gridOptions"></vxe-grid>
-          </el-tab-pane>
-          <el-tab-pane :label="oneDay" name="first2">
-            <vxe-grid class="reverse-table" v-bind="gridOptions"></vxe-grid>
-          </el-tab-pane>
-          <el-tab-pane :label="oneDay" name="first3">
-            <vxe-grid class="reverse-table" v-bind="gridOptions"></vxe-grid>
-          </el-tab-pane>
-          <el-tab-pane :label="oneDay" name="first4">
-            <vxe-grid class="reverse-table" v-bind="gridOptions"></vxe-grid>
-          </el-tab-pane>
-          <el-tab-pane :label="oneDay" name="first5">
-            <vxe-grid class="reverse-table" v-bind="gridOptions"></vxe-grid>
-          </el-tab-pane>
-          <el-tab-pane :label="oneDay" name="first6">
-            <vxe-grid class="reverse-table" v-bind="gridOptions"></vxe-grid>
-          </el-tab-pane>
-          <el-tab-pane :label="oneDay" name="first7">
-            <vxe-grid class="reverse-table" v-bind="gridOptions"></vxe-grid>
-          </el-tab-pane>
+          <template v-for="item in dayList" :key="item.key">
+            <el-tab-pane :label="item.key" :name="item.value">
+              <vxe-grid class="reverse-table" ref="xGrid" v-bind="gridOptions"></vxe-grid>
+            </el-tab-pane>
+          </template>
           <div style="margin-top: 20px;">
-            <el-descriptions title="当日概况" :column="4" border>
-              <el-descriptions-item label="天气现象">多云</el-descriptions-item>
-              <el-descriptions-item label="风速风向">微风 西南风</el-descriptions-item>
-              <el-descriptions-item label="最高温度">22℃</el-descriptions-item>
-              <el-descriptions-item label="最低温度">22℃</el-descriptions-item>
-              <el-descriptions-item label="平均温度">22℃</el-descriptions-item>
-              <el-descriptions-item label="降水量">0.1</el-descriptions-item>
-              <el-descriptions-item label="舒适度指数">温暖</el-descriptions-item>
-              <el-descriptions-item label="感冒指数">易发</el-descriptions-item>
+            <el-descriptions title="当日概况" :column="2" border>
+              <el-descriptions-item label="当天湿度">0.97%</el-descriptions-item>
+              <el-descriptions-item label="当天温度">23℃</el-descriptions-item>
+              <el-descriptions-item label="当天可见度">	4.73km</el-descriptions-item>
+              <el-descriptions-item label="当天云量">	1%</el-descriptions-item>
+              <el-descriptions-item label="当天气压">99995.54hPa</el-descriptions-item>
+              <el-descriptions-item label="当天降水量">0.1104mm</el-descriptions-item>
             </el-descriptions>
           </div>
         </el-tabs>
@@ -57,22 +57,133 @@
 </template>
 
 <script setup lang="ts">
-import type { TabsPaneContext } from 'element-plus';
-import { ref, reactive } from 'vue'
+import type { TabsPaneContext } from 'element-plus'
+import { ref, reactive, nextTick, computed, onMounted } from 'vue'
 import Title from "@/components/Title.vue"
-import type { VxeGridProps } from 'vxe-table';
+import type { VxeGridInstance, VxeGridPropTypes, VxeGridProps } from 'vxe-table'
+import { getAllCity, getStationByCity } from "@/api/weatherStation"
+import { getForecastWeather } from "@/api/weatherForecast"
+import XEUtils from 'xe-utils'
+import axios from 'axios'
 
 const weatherTitle = '7日内天气预报（2023/05/09 12:00发布）'
-const activeName = ref('first1')
-const oneDay = '2023-05-01 星期二'
+const activeName = ref<any>(XEUtils.toDateString(XEUtils.getWhatDay(new Date(), 1), 'yyyy-MM-dd'))
+XEUtils.setup({
+  formatStringMatchs: {
+    E: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+  }
+})
+const dayList = ref([{
+  key: '',
+  value: '',
+}])
 
-const handleClick = (tab: TabsPaneContext, event: Event) => {
-  console.log(tab, event)
+dayList.value.length = 0
+for (let index = 0; index < 7; index++) {
+  dayList.value.push({
+    key: XEUtils.toDateString(XEUtils.getWhatDay(new Date(), index + 1), 'yyyy-MM-dd E'),
+    value: XEUtils.toDateString(XEUtils.getWhatDay(new Date(), index + 1), 'yyyy-MM-dd'),
+  })
 }
 
-const ddd = () => {
-  console.log('ddd');
+const nowCity = ref('南昌市')
+const nowStation = ref('青山湖区')
 
+const cityList: any = reactive([])
+const stationList: any = reactive([])
+
+getAllCity().then(res => {
+  const data = res.data
+  cityList.length = 0
+  data.forEach((item: any) => {
+    cityList.push({
+      label: item.station_city,
+      value: item.station_city
+    })
+  })
+  console.log(cityList);
+})
+
+getStationByCity(nowCity.value).then(res => {
+  const data = res.data
+  stationList.length = 0
+  data.forEach((item: any) => {
+    stationList.push({
+      label: item.stationName,
+      value: item.stationLongitude + ',' + item.stationLatitude
+    })
+  })
+})
+
+const cityDropdown = ref()
+
+const handleCity = (command: string) => {
+  nowCity.value = command
+  if (!cityDropdown.value) return
+  getStationByCity(nowCity.value).then(res => {
+    const data = res.data
+    stationList.length = 0
+    data.forEach((item: any) => {
+      stationList.push({
+        label: item.stationName,
+        value: item.stationLongitude + ',' + item.stationLatitude
+      })
+    })
+    cityDropdown.value.handleOpen()
+  })
+}
+
+const xGrid = ref<VxeGridInstance>()
+
+const forecastWeatherList = ref<any[]>([]);
+
+const handleWeather = (command: string) => {
+  nowStation.value = command.split('/')[1]
+  console.log(command);
+  getForecastWeather(command.split('/')[0]).then(res => {
+    forecastWeatherList.value = res.data
+    reverseTable()
+  })
+}
+
+onMounted(() => {
+  getForecastWeather('115.949044,28.689292').then(res => {
+    forecastWeatherList.value = res.data
+    reverseTable()
+  })
+})
+
+const selectedDate = ref<string>(activeName.value)
+const filteredWeatherData = computed(() => {
+  return forecastWeatherList.value.filter(data => {
+    // 根据日期进行筛选
+    const dataDate = data.datetime.split(' ')[0]
+    return dataDate === selectedDate.value
+  }).map(data => {
+    // 格式化
+    const formattedDate = XEUtils.toDateString(data.datetime, 'HH:mm:ss')
+    const formattedTemperature = data.temperature + '℃'
+    const formattedPrecipitation = data.precipitation + 'mm'
+    const formattedPressure = data.pressure + 'hPa'
+    const formattedVisibility = data.visibility + 'km'
+    const formattedCloudRate = data.cloudRate + '%'
+    const formattedHumidity = data.humidity + '%'
+    return {
+      ...data,
+      datetime: formattedDate,
+      temperature: formattedTemperature,
+      precipitation: formattedPrecipitation,
+      pressure: formattedPressure,
+      visibility: formattedVisibility,
+      cloudRate: formattedCloudRate,
+      humidity: formattedHumidity,
+    }
+  })
+})
+
+const handleClick = (tab: TabsPaneContext, event: Event) => {
+  selectedDate.value = tab.paneName as string
+  reverseTable()
 }
 
 interface RowVO {
@@ -85,53 +196,50 @@ interface RowVO {
   col7: string
 }
 
-const gridData = [
-  {
-    date: '2016-05-02',
-    name: 'Jack',
-    address: 'New York City',
-  },
-  {
-    date: '2016-05-04',
-    name: 'Jack',
-    address: 'New York City',
-  },
-  {
-    date: '2016-05-01',
-    name: 'Jack',
-    address: 'New York City',
-  },
-  {
-    date: '2016-05-03',
-    name: 'Jack',
-    address: 'New York City',
-  },
-]
-
 const gridOptions = reactive<VxeGridProps<RowVO>>({
   showOverflow: true,
   showHeader: false,
-  columns: [
-    { field: 'col1', width: 100, className: 'first-field', align: 'center' },
-    { field: 'col2', align: 'center' },
-    { field: 'col3', align: 'center' },
-    { field: 'col4', align: 'center' },
-    { field: 'col5', align: 'center' },
-    { field: 'col6', align: 'center' },
-    { field: 'col7', align: 'center' },
-  ],
-  data: [
-    { col1: '时间', col2: 'Test1', col3: 'Test2', col4: 'Test3', col5: 'Test4', col6: 'Test5', col7: 'Test6' },
-    { col1: '天气', col2: 'Develop', col3: 'PM', col4: 'Designer', col5: 'Test', col6: 'Designer', col7: 'Develop' },
-    { col1: '温度', col2: 'Man', col3: 'Women', col4: 'Man', col5: 'Women', col6: 'Man', col7: 'Women' },
-    { col1: '降水量', col2: '28', col3: '18', col4: '22', col5: '30', col6: '26', col7: '34' },
-    { col1: '风速', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
-    { col1: '风向', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
-    { col1: '气压', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
-    { col1: '湿度', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
-    { col1: '云量', col2: 'Shenzhen', col3: 'Guangzhou', col4: 'Shanghai', col5: 'Shenzhen', col6: 'Shanghai', col7: 'Guangzhou' },
-  ]
+  columns: [],
+  data: [],
 })
+
+const myColumns = [
+  { field: 'datetime', title: '时间', className: 'first-field' },
+  { field: 'precipitation', title: '降水量' },
+  { field: 'temperature', title: '温度' },
+  { field: 'pressure', title: '气压' },
+  { field: 'visibility', title: '能见度' },
+  { field: 'cloudRate', title: '云量' },
+  { field: 'humidity', title: '湿度' },
+]
+
+
+const reverseTable = () => {
+  const buildData = myColumns.map(column => {
+    const item: any = { col0: column.title }
+    filteredWeatherData.value.forEach((row, index) => {
+      item[`col${index + 1}`] = row[column.field as keyof typeof row];
+    })
+    return item
+  })
+  const buildColumns: VxeGridPropTypes.Columns = [{
+    field: 'col0',
+    fixed: 'left',
+    className: 'first-field',
+    width: 80
+  }]
+  filteredWeatherData.value.forEach((item, index) => {
+    buildColumns.push({
+      field: `col${index + 1}`,
+      minWidth: 120
+    })
+  })
+  gridOptions.data = buildData
+  gridOptions.columns = buildColumns
+}
+
+reverseTable()
+
 </script>
 
 <style lang="scss" scoped>
@@ -139,5 +247,19 @@ const gridOptions = reactive<VxeGridProps<RowVO>>({
   border-radius: 0 0 4px 4px;
 }
 
+.location-item {
+  padding-left: 20px;
+  border-right: 2px solid #fff;
+  display: inline-block;
+  cursor: pointer;
+}
 
+.el-dropdown-link {
+  font-size: 15px;
+  color: #000;
+}
+
+.reverse-table .vxe-body--row .vxe-body--column:first-child {
+  background-color: #f8f8f9;
+}
 </style>

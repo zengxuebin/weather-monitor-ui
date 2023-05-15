@@ -38,9 +38,20 @@ export const getAllCity = () => {
  * 根据城市查询监测站
  * @returns 监测站列表
  */
-export const getStationByCity = (station: string) => {
+export const getStationByCity = (city: string) => {
   return request({
     method: 'get',
-    url: '/station/list/' + station,
+    url: '/station/list/' + city,
+  })
+}
+
+/**
+ * 统计监测站个数
+ * @returns 监测站列表
+ */
+export const countStation = () => {
+  return request({
+    method: 'get',
+    url: '/station/count',
   })
 }

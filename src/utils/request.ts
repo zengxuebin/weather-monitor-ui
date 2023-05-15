@@ -17,6 +17,8 @@ declare module "axios" {
     dept: any,
     statistics: any,
     tempList: any,
+    cityCount: any,
+    typeCount: any,
   }
 }
 

@@ -36,10 +36,6 @@ import TodayEcharts from "@/components/echarts/index.vue"
 import AirQuality from "@/components/weather/AirQuality.vue"
 import { getStationByCity } from "@/api/weatherStation"
 
-getStationByCity('赣州市').then(res => {
-  console.log(res);
-})
-
 const options = {
   title: {
     text: '未来三小时内不会下雨 您可以放心出门',

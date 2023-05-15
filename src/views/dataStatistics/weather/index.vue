@@ -43,7 +43,7 @@
             </el-col>
           </el-row>
         </el-progress>
-        <el-progress type="circle" :percentage="3" color="#00796a">
+        <el-progress type="circle" :percentage="19" color="#00796a">
           <el-row>
             <el-col>
               <el-text>雪</el-text>
@@ -180,7 +180,33 @@
 import MapEchart from "@/components/echarts/index.vue"
 import StationEchart from "@/components/echarts/index.vue"
 import XEUtils from 'xe-utils'
-import { onMounted, ref } from "vue"
+import { onMounted, reactive, ref } from "vue"
+import { countStation } from "@/api/weatherStation"
+
+// 数量统计
+const citys = ref([String])
+const counts = ref([Number])
+// 类型统计
+const typeCount = reactive([{}])
+
+countStation().then(res => {
+  citys.value.length = 0
+  counts.value.length = 0
+  res.cityCount.forEach((item: any) => {
+    citys.value.push(item.stationCity);
+    counts.value.push(item.count);
+  })
+  typeCount.length = 0
+  console.log(res);
+
+  res.typeCount.forEach((item: any) => {
+    typeCount.push({
+      value: item.count,
+      name: item.stationType
+    });
+  });
+})
+
 const dateRange = '数据自2023-01-01至' + XEUtils.toDateString(new Date(), 'yyyy-MM-dd')
 
 const nowCity = ref('南昌市')
@@ -229,13 +255,13 @@ const StationOption = {
   },
   yAxis: {
     type: 'category',
-    data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World', 'Brazil', 'Indonesia', 'USA', 'India', 'China', 'World']
+    data: citys.value
   },
   series: [
     {
-      name: '2011',
+      name: '监测站个数',
       type: 'bar',
-      data: [123, 132, 13, 243, 154, 190, 123, 132, 13, 243, 154, 190]
+      data: counts.value
     },
   ]
 }
@@ -245,17 +271,14 @@ const typeOption = {
     trigger: 'item'
   },
   legend: {
+    orient: 'vertical',
     left: 'left'
   },
   series: [
     {
-      name: 'Access From',
+      name: '类型统计',
       type: 'pie',
-      data: [
-        { value: 1048, name: 'Search Engine' },
-        { value: 735, name: 'Direct' },
-        { value: 580, name: 'Email' },
-      ],
+      data: typeCount,
     }
   ]
 }

@@ -106,7 +106,7 @@
           </el-statistic>
         </el-col>
         <el-col :span="4" class="statistic-card">
-          <el-statistic :value="statistics.maxWindSpeed" value-style="color: #f6bd0e"  :formatter="speedFormat">
+          <el-statistic :value="statistics.maxWindSpeed" value-style="color: #f6bd0e" :formatter="speedFormat">
             <template #title>
               <div style="display: inline-flex; align-items: center; font-size: 14px;">
                 风速最大
@@ -153,7 +153,7 @@ const cityList: any = reactive([])
 
 getAllCity().then(res => {
   const data = res.data
-  cityList.splice(0, 1)
+  cityList.length = 0
   data.forEach((item: any) => {
     cityList.push({
       label: item.station_city,
@@ -196,9 +196,9 @@ const statistics = reactive({
   maxWindSpeed: 0.0
 })
 
-const historyDates = ref([number]);
-const maxTemps = ref([number]);
-const minTemps = ref([number]);
+const historyDates = ref([Number])
+const maxTemps = ref([Number])
+const minTemps = ref([Number])
 
 const getStatistics = (nowCity: string, dateRange: any) => {
   const date = {
@@ -218,12 +218,12 @@ const getStatistics = (nowCity: string, dateRange: any) => {
     historyDates.value.length = 0
     maxTemps.value.length = 0
     minTemps.value.length = 0
-    for (const item of res.tempList) {
+    res.tempList.forEach((item: any) => {
       historyDates.value.push(item.historyDate);
       maxTemps.value.push(item.maxTemp);
       minTemps.value.push(item.minTemp);
-    }
-    
+    })
+
   })
 }
 
