@@ -42,12 +42,12 @@
           </template>
           <div style="margin-top: 20px;">
             <el-descriptions title="当日概况" :column="2" border>
-              <el-descriptions-item label="当天湿度">0.97%</el-descriptions-item>
-              <el-descriptions-item label="当天温度">23℃</el-descriptions-item>
-              <el-descriptions-item label="当天可见度">	4.73km</el-descriptions-item>
-              <el-descriptions-item label="当天云量">	1%</el-descriptions-item>
-              <el-descriptions-item label="当天气压">99995.54hPa</el-descriptions-item>
-              <el-descriptions-item label="当天降水量">0.1104mm</el-descriptions-item>
+              <el-descriptions-item label="当天湿度">{{ forecast.humidity }}</el-descriptions-item>
+              <el-descriptions-item label="当天温度">{{ forecast.temperature }}</el-descriptions-item>
+              <el-descriptions-item label="当天可见度">{{ forecast.visibility }}</el-descriptions-item>
+              <el-descriptions-item label="当天云量">{{ forecast.cloudRate }}</el-descriptions-item>
+              <el-descriptions-item label="当天气压">{{ forecast.pressure }}</el-descriptions-item>
+              <el-descriptions-item label="当天降水量">{{ forecast.precipitation }}</el-descriptions-item>
             </el-descriptions>
           </div>
         </el-tabs>
@@ -146,6 +146,15 @@ const handleWeather = (command: string) => {
   })
 }
 
+const forecast = reactive({
+  temperature: '',
+  precipitation: '',
+  pressure: '',
+  visibility: '',
+  cloudRate: '',
+  humidity: '',
+})
+
 onMounted(() => {
   getForecastWeather('115.949044,28.689292').then(res => {
     forecastWeatherList.value = res.data
@@ -168,6 +177,12 @@ const filteredWeatherData = computed(() => {
     const formattedVisibility = data.visibility + 'km'
     const formattedCloudRate = data.cloudRate + '%'
     const formattedHumidity = data.humidity + '%'
+    forecast.cloudRate = formattedCloudRate
+    forecast.humidity = formattedHumidity
+    forecast.precipitation = formattedPrecipitation
+    forecast.pressure = formattedPressure
+    forecast.temperature = formattedTemperature
+    forecast.visibility = formattedVisibility
     return {
       ...data,
       datetime: formattedDate,
