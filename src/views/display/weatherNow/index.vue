@@ -38,7 +38,6 @@ import { getStationByCity } from "@/api/weatherStation"
 
 getStationByCity('赣州市').then(res => {
   console.log(res);
-  
 })
 
 const options = {

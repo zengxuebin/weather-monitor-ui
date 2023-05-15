@@ -15,6 +15,8 @@ declare module "axios" {
     roles: any,
     permissions: any,
     dept: any,
+    statistics: any,
+    tempList: any,
   }
 }
 
