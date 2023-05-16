@@ -5,12 +5,18 @@
         <el-tag size='large'>正常</el-tag>
       </template>
       <template #operator="{ row }">
-        <el-tag size='large' type="warning" v-if="row.operator === 'eq'">=</el-tag>
-        <el-tag size='large' type="warning" v-if="row.operator === 'ne'">!=</el-tag>
-        <el-tag size='large' type="warning" v-if="row.operator === 'gt'">></el-tag>
-        <el-tag size='large' type="warning" v-if="row.operator === 'lt'">&lt;</el-tag>
-        <el-tag size='large' type="warning" v-if="row.operator === 'ge'">>=</el-tag>
-        <el-tag size='large' type="warning" v-else>&lt;=</el-tag>
+        <el-tag size='large' type="warning" v-if="row.operator === '>='">大于等于</el-tag>
+        <el-tag size='large' type="warning" v-else-if="row.operator === '<='">小于等于</el-tag>
+        <el-tag size='large' type="warning" v-else-if="row.operator === '='">等于</el-tag>
+        <el-tag size='large' type="warning" v-else-if="row.operator === '!='">不等于</el-tag>
+        <el-tag size='large' type="warning" v-else-if="row.operator === '>'">大于</el-tag>
+        <el-tag size='large' type="warning" v-else>小于</el-tag>
+      </template>
+      <template #alert_level="{ row }">
+        <span v-if="row.alertLevel === '红色'" style="color: #c63f34;">{{ row.alertLevel }}</span>
+        <span v-else-if="row.alertLevel === '橙色'" style="color: #f2a747;">{{ row.alertLevel }}</span>
+        <span v-else-if="row.alertLevel === '黄色'" style="color: #f6bd0e;">{{ row.alertLevel }}</span>
+        <span v-else style="color: #4064f6;">{{ row.alertLevel }}</span>
       </template>
     </vxe-grid>
   </div>
@@ -20,6 +26,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
+import { getPageAlertRule } from "@/api/alertRule";
 
 const serveApiUrl = 'https://api.vxetable.cn/demo'
 
@@ -90,14 +97,14 @@ const gridOptions = reactive<VxeGridProps>({
         }
       },
       {
-        field: 'alertStatus',
-        title: '预警状态',
+        field: 'alertLevel',
+        title: '预警级别',
         span: 6,
         itemRender: {
           name: '$select',
           options: [],
           props: {
-            placeholder: '请选择预警状态'
+            placeholder: '请选择预警级别'
           }
         }
       },
@@ -178,61 +185,38 @@ const gridOptions = reactive<VxeGridProps>({
       // 当点击工具栏查询按钮或者手动提交指令 query或reload 时会被触发
       query: ({ page, sorts, filters, form }) => {
         return new Promise(resolve => {
-          setTimeout(() => {
-            const queryParams: any = Object.assign({}, form)
-            // 处理排序条件
-            const firstSort = sorts[0]
-            if (firstSort) {
-              queryParams.sort = firstSort.field
-              queryParams.order = firstSort.order
+          const queryParams: any = Object.assign({}, form)
+          // 处理排序条件
+          const firstSort = sorts[0]
+          if (firstSort) {
+            queryParams.sort = firstSort.field
+            queryParams.order = firstSort.order
+          }
+          // 处理筛选条件
+          filters.forEach(({ field, values }) => {
+            queryParams[field] = values.join(',')
+          })
+
+          console.log(form);
+          
+          // 请求参数
+          const data = {
+            pageNum: page.currentPage,
+            pageSize: page.pageSize,
+            entity: {
+              ruleName: form.ruleName,
+              alertLevel: form.alertLevel,
+              metric: form.metric,
             }
-            // 处理筛选条件
-            filters.forEach(({ field, values }) => {
-              queryParams[field] = values.join(',')
-            })
-            // return Promise
-            const list = [
-              {
-                ruleId: 1001, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
-                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
-              },
-              {
-                ruleId: 1002, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
-                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
-              },
-              {
-                ruleId: 1003, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
-                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
-              },
-              {
-                ruleId: 1004, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
-                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
-              },
-              {
-                ruleId: 1005, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
-                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
-              },
-              {
-                ruleId: 1006, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
-                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
-              },
-              {
-                ruleId: 1007, ruleName: '高温预警', metric: '温度', operator: 'le', threshold: 36, alertStatus: '0',
-                ruleDesc: '当温度高于36时，触发高温预警', createBy: 'admin', createTime: '2023-01-01 00:00:00',
-                updateBy: 'admin', updateTime: '2023-01-01 00:00:00', remark: ''
-              },
-            ]
+          }
+          // 调用方法
+          getPageAlertRule(data).then(res => {
+            const data = res.data
             resolve({
-              records: list,
-              total: page.pageSize * 20
+              records: data.records,
+              total: data.total
             })
-          }, 500)
+          })
         })
       },
       delete: ({ body }) => {
@@ -259,13 +243,30 @@ const gridOptions = reactive<VxeGridProps>({
       field: 'ruleName',
       title: '预警规则名称',
       align: "center",
-      width: 150,
+      width: 200,
     },
     {
       field: 'metric',
       title: '预警监测指标',
       align: "center",
       width: 150,
+      formatter: ({ cellValue }) => {
+        if (cellValue === 'temperature') {
+          return '温度'
+        } else if (cellValue === 'windSpeed') {
+          return '风速'
+        } else if (cellValue === 'precipitation') {
+          return '降水量'
+        } else if (cellValue === 'visibility') {
+          return '能见度'
+        } else if (cellValue === 'humidity') {
+          return '湿度'
+        } else if (cellValue === 'aqi') {
+          return 'AQI'
+        } else {
+          return 'PM2.5'
+        }
+      }
     },
     {
       field: 'operator',
@@ -283,6 +284,21 @@ const gridOptions = reactive<VxeGridProps>({
       width: 120,
     },
     {
+      field: 'alertLevel',
+      title: '预警级别',
+      align: "center",
+      width: 120,
+      slots: {
+        default: 'alert_level',
+      },
+    },
+    {
+      field: 'priority',
+      title: '预警优先级',
+      align: "center",
+      width: 120,
+    },
+    {
       field: 'alertStatus',
       title: '预警状态',
       align: "center",
@@ -295,7 +311,7 @@ const gridOptions = reactive<VxeGridProps>({
       field: 'ruleDesc',
       title: '预警描述',
       align: "center",
-      width: 250,
+      width: 300,
     },
     {
       field: 'createBy',
@@ -336,16 +352,18 @@ const gridOptions = reactive<VxeGridProps>({
 })
 
 onMounted(() => {
-  const sexList = [
-    { label: '正常', value: '0' },
-    { label: '停用', value: '1' },
+  const levelList = [
+    { label: '红色', value: '红色' },
+    { label: '橙色', value: '橙色' },
+    { label: '黄色', value: '黄色' },
+    { label: '蓝色', value: '蓝色' },
   ]
   const { formConfig } = gridOptions
 
   if (formConfig && formConfig.items) {
-    const sexItem = formConfig.items[1]
-    if (sexItem && sexItem.itemRender) {
-      sexItem.itemRender.options = sexList
+    const levelItem = formConfig.items[1]
+    if (levelItem && levelItem.itemRender) {
+      levelItem.itemRender.options = levelList
     }
   }
 })
