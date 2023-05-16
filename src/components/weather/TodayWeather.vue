@@ -36,14 +36,14 @@
         </div>
       </el-col>
       <el-col :span="6" class="update-time">
-        2023-05-01 00:00:00更新
+        {{ nowWeather.dataCollectTime }} 更新
       </el-col>
     </el-row>
     <el-row>
 
       <el-col :span="24" class="weather-temp">
-        <el-tooltip content="体感温度"><span>38.6<sup>℃</sup></span></el-tooltip>
-        <span class="status">晴</span>
+        <el-tooltip content="体感温度"><span>{{ nowWeather.temperature }}<sup>℃</sup></span></el-tooltip>
+        <span class="status">{{ nowWeather.weather }}</span>
       </el-col>
     </el-row>
     <el-row justify="space-around" class="weather-item">
@@ -51,7 +51,7 @@
         <el-icon>
           <Compass />
         </el-icon>
-        831.87hPa<el-tooltip effect="dark" content="气压" placement="top">
+        {{ nowWeather.pressure }}<el-tooltip effect="dark" content="气压" placement="top">
           <el-icon style="margin-left: 4px" :size="18">
             <Warning />
           </el-icon>
@@ -71,7 +71,7 @@
         <el-icon>
           <Pouring />
         </el-icon>
-        无降水<el-tooltip effect="dark" content="降水量" placement="top">
+        {{ nowWeather.precipitation }}<el-tooltip effect="dark" content="降水量" placement="top">
           <el-icon style="margin-left: 4px" :size="18">
             <Warning />
           </el-icon>
@@ -81,7 +81,7 @@
         <el-icon>
           <Orange />
         </el-icon>
-        空气优 33<el-tooltip effect="dark" content="空气质量" placement="top">
+        空气{{ nowWeather.airQualityDesc }} {{ nowWeather.aqi }}<el-tooltip effect="dark" content="空气质量" placement="top">
           <el-icon style="margin-left: 4px" :size="18">
             <Warning />
           </el-icon>
@@ -101,7 +101,7 @@
         <el-icon>
           <Sunset />
         </el-icon>
-        温暖<el-tooltip effect="dark" content="舒适度" placement="top">
+        {{ nowWeather.comfort }}<el-tooltip effect="dark" content="舒适度" placement="top">
           <el-icon style="margin-left: 4px" :size="18">
             <Warning />
           </el-icon>
@@ -109,7 +109,7 @@
       </el-col>
       <el-col :span="5">
         <i class="vxe-icon-eye-fill"></i>
-        25km<el-tooltip effect="dark" content="能见度" placement="top">
+        {{ nowWeather.visibility }}km<el-tooltip effect="dark" content="能见度" placement="top">
           <el-icon style="margin-left: 4px" :size="18">
             <Warning />
           </el-icon>
@@ -119,7 +119,7 @@
         <el-icon>
           <ToiletPaper />
         </el-icon>
-        61%<el-tooltip effect="dark" content="湿度" placement="top">
+        {{ nowWeather.humidity }}<el-tooltip effect="dark" content="湿度" placement="top">
           <el-icon style="margin-left: 4px" :size="18">
             <Warning />
           </el-icon>
@@ -130,8 +130,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { getAllCity, getStationByCity } from "@/api/weatherStation"
+import { getDictListByType } from "@/api/dict"
 
 const props = defineProps({
   height: {
@@ -142,7 +143,12 @@ const props = defineProps({
     type: String,
     default: '100%'
   },
+  weatherNow: {
+    type: Object,
+    default: {}
+  }
 })
+const nowWeather: any = ref({})
 
 const nowCity = ref('南昌市')
 const nowStation = ref('青山湖区')
@@ -198,6 +204,19 @@ const handleWeather = (command: string) => {
   emit('nowLocation', command.split('/')[0])
 }
 
+watch(() => props.weatherNow, (newWeatherNow) => {
+  nowWeather.value = newWeatherNow
+  getDictListByType('sys_weather').then(res => {
+    console.log(nowWeather.value);
+    res.data.forEach((item: any) => {
+      if (item.dictValue === nowWeather.value.weather) {
+        nowWeather.value.weather = item.dictLabel
+      }
+    })
+  })
+}, {
+  deep: true
+})
 </script>
 
 <style lang="scss" scoped>
@@ -220,7 +239,7 @@ const handleWeather = (command: string) => {
 
 .weather-temp {
   text-align: center;
-  font-size: 100px;
+  font-size: 80px;
   margin: 15px auto;
 }
 

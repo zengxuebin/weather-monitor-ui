@@ -7,23 +7,28 @@
 <script setup lang="ts">
 import MapEchart from "@/components/echarts/index.vue"
 import { getAllStation } from "@/api/weatherStation";
-import { ref } from "vue";
+import { computed, reactive, ref } from "vue"
 
-let geoCoordMap = ref<any[]>([]);
+const geoCoordMap = reactive<any[]>([]);
+
 
 getAllStation().then(res => {
   const data = res.data
   data.forEach((item: any) => {
-    geoCoordMap.value.push({
+    geoCoordMap.push({
       name: item.stationName,
       value: [
-        item.stationLatitude,
         item.stationLongitude,
+        item.stationLatitude,
         item.stationType,
       ]
     })
   })
 })
+
+const generalArray = computed(() => geoCoordMap.filter(item => item.value[2] === '一般站'));
+const basicArray = computed(() => geoCoordMap.filter(item => item.value[2] === '基本站'));
+const benchmarkArray = computed(() => geoCoordMap.filter(item => item.value[2] === '基准站'));
 
 const mapOption = ref({
   geo: {
@@ -44,20 +49,52 @@ const mapOption = ref({
       }
     },
   },
-
   tooltip: {
     trigger: 'item'
   },
-  bmap: {
+  legend: {
+    data: ['一般站', '基本站', '基准站'],
+    orient: 'vertical',
+    left: 30
   },
   series: [
     {
-      name: 'pm2.5',
+      name: '一般站',
       type: 'scatter',
-      coordinateSystem: 'bmap',
-      data: geoCoordMap.value,
+      coordinateSystem: 'geo',
+      data: generalArray,
+      tooltip: {
+        formatter: (params: { name: string; }) => {
+          const name = params.name || '';
+          return `${name} 一般站`;
+        }
+      }
     },
-  ]
+    {
+      name: '基本站',
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      data: basicArray,
+      tooltip: {
+        formatter: (params: { name: string; }) => {
+          const name = params.name || '';
+          return `${name} 基本站`;
+        }
+      }
+    },
+    {
+      name: '基准站',
+      type: 'effectScatter',
+      coordinateSystem: 'geo',
+      data: benchmarkArray,
+      tooltip: {
+        formatter: (params: { name: string; }) => {
+          const name = params.name || '';
+          return `${name} 基准站`;
+        }
+      }
+    },
+  ],
 })
 </script>
 

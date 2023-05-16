@@ -22,3 +22,14 @@ export const getDictDataListByDictType = (dictType: string) => {
     url: '/system/dict/data/list/' + dictType,
   })
 }
+
+/**
+ * 获取键值列表
+ * @returns 键值列表
+ */
+export const getDictListByType = (dictType: string) => {
+  return request({
+    method: 'get',
+    url: '/system/dict/data/type/' + dictType,
+  })
+}

@@ -14,7 +14,7 @@
                   </el-icon>
                 </el-tooltip></el-text>
               <el-text>细颗粒物</el-text>
-              <span style="font-weight: bold;">56</span>
+              <span style="font-weight: bold;">{{ nowWeather.pm25 }}</span>
             </el-space>
           </el-col>
           <el-col :span="12">
@@ -25,7 +25,7 @@
                   </el-icon>
                 </el-tooltip></el-text>
               <el-text>粗颗粒物</el-text>
-              <span style="font-weight: bold;">56</span>
+              <span style="font-weight: bold;">{{ nowWeather.pm10 }}</span>
             </el-space>
           </el-col>
         </el-row>
@@ -38,7 +38,7 @@
                   </el-icon>
                 </el-tooltip></el-text>
               <el-text>二氧化硫</el-text>
-              <span style="font-weight: bold;">12</span>
+              <span style="font-weight: bold;">{{ nowWeather.so2 }}</span>
             </el-space>
           </el-col>
           <el-col :span="12">
@@ -49,7 +49,7 @@
                   </el-icon>
                 </el-tooltip></el-text>
               <el-text>二氧化氮</el-text>
-              <span style="font-weight: bold;">17</span>
+              <span style="font-weight: bold;">{{ nowWeather.no2 }}</span>
             </el-space>
           </el-col>
         </el-row>
@@ -62,7 +62,7 @@
                   </el-icon>
                 </el-tooltip></el-text>
               <el-text>一氧化碳</el-text>
-              <span style="font-weight: bold;">1</span>
+              <span style="font-weight: bold;">{{ nowWeather.co }}</span>
             </el-space>
           </el-col>
           <el-col :span="12">
@@ -73,7 +73,7 @@
                   </el-icon>
                 </el-tooltip></el-text>
               <el-text>臭氧</el-text>
-              <span style="font-weight: bold;">92</span>
+              <span style="font-weight: bold;">{{ nowWeather.o3 }}</span>
             </el-space>
           </el-col>
         </el-row>
@@ -84,8 +84,27 @@
 
 <script setup lang="ts">
 import AirEchart from "@/components/echarts/index.vue"
+import { reactive, ref, watch } from "vue";
 
-const options = {
+const props = defineProps({
+  weatherNow: {
+    type: Object,
+    default: {}
+  }
+})
+
+const nowWeather: any = ref({})
+nowWeather.value = props.weatherNow
+const airQuality = reactive({
+  aqi: 0,
+  airQualityDesc: '',
+})
+
+airQuality.aqi = nowWeather.value.aqi
+airQuality.airQualityDesc = nowWeather.value.airQualityDesc
+
+
+const options = ref({
   tooltip: {
     formatter: '{a} <br/>{b} : {c}'
   },
@@ -122,13 +141,23 @@ const options = {
       },
       data: [
         {
-          value: 51,
-          name: '良'
+          value: airQuality.aqi,
+          name: airQuality.airQualityDesc
         }
       ]
     }
   ]
-}
+})
+
+watch(() => props.weatherNow, (newWeatherNow) => {
+  nowWeather.value = newWeatherNow
+  airQuality.aqi = nowWeather.value.aqi
+  airQuality.airQualityDesc = nowWeather.value.airQualityDesc
+  options.value.series[0].data[0].value = airQuality.aqi
+  options.value.series[0].data[0].name = airQuality.airQualityDesc
+}, {
+  deep: true
+})
 </script>
 
 <style lang="scss" scoped>

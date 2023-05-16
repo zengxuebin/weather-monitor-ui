@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
@@ -51,8 +51,13 @@ const collectData = () => {
     }
   )
     .then(() => {
+      const loading = ElLoading.service({
+        lock: true,
+        text: '正在采集中',
+      })
       getNowWeather().then(res => {
         console.log(res);
+        loading.close()
         ElMessage({
           type: 'success',
           message: '采集成功',

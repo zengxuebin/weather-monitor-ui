@@ -21,6 +21,7 @@ declare module "axios" {
     typeCount: any,
     precipitation: any,
     desc: any,
+    weatherNow: any,
   }
 }
 

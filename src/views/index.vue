@@ -258,7 +258,7 @@
         <el-card class="today-card">
           <template #header>
             <div>
-              <span>今日天气预报</span>
+              <span>24小时天气速递</span>
             </div>
           </template>
           <TodayEcharts :options="options" height="320px"></TodayEcharts>

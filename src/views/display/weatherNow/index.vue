@@ -2,7 +2,7 @@
   <div>
     <el-row>
       <el-col :span="24" class="today-weather">
-        <TodayWeather @nowLocation="handleLocation"></TodayWeather>
+        <TodayWeather @nowLocation="handleLocation" :weatherNow="weatherNow"></TodayWeather>
       </el-col>
     </el-row>
     <el-row justify="space-between">
@@ -23,7 +23,7 @@
               <span>实时空气质量</span>
             </div>
           </template>
-          <AirQuality></AirQuality>
+          <AirQuality :weatherNow="weatherNow"></AirQuality>
         </el-card>
       </el-col>
     </el-row>
@@ -38,12 +38,14 @@ import { getStationByCity } from "@/api/weatherStation"
 import { getNowWeather } from "@/api/weatherNow"
 import { onMounted, ref } from "vue"
 import XEUtils from "xe-utils"
+import { getDictListByType } from "@/api/dict"
 
 const location = ref('')
 
 // 降水量
 const minutes = ref([Number])
 const precipitations = ref([Number])
+const weatherNow = ref({})
 
 const handleLocation = (value: string) => {
   location.value = value
@@ -51,10 +53,13 @@ const handleLocation = (value: string) => {
     minutes.value.length = 0
     precipitations.value.length = 0
     options.title.text = res.desc
+    weatherNow.value = res.weatherNow
     res.precipitation.forEach((item: any) => {
       minutes.value.push(item.minutes);
       precipitations.value.push(item.precipitation);
     })
+    console.log(weatherNow.value);
+    
   })
 }
 
@@ -63,9 +68,11 @@ onMounted(() => {
     minutes.value.length = 0
     precipitations.value.length = 0
     res.precipitation.forEach((item: any) => {
-      minutes.value.push(item.minutes);
-      precipitations.value.push(item.precipitation);
+      minutes.value.push(item.minutes)
+      precipitations.value.push(item.precipitation)
     })
+    weatherNow.value = res.weatherNow
+    console.log(weatherNow.value);
     options.title.text = res.desc
   })
 })
