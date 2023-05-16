@@ -9,37 +9,27 @@
         <div class="location-item">
           <el-dropdown trigger="click" @command="handleCity">
             <span class="el-dropdown-link">
-              南昌市<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              {{ nowCity }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="Action 1">Action 1</el-dropdown-item>
-                <el-dropdown-item command="Action 2">Action 2</el-dropdown-item>
-                <el-dropdown-item command="Action 3">Action 3</el-dropdown-item>
-                <el-dropdown-item command="Action 4">Action 4</el-dropdown-item>
-                <el-dropdown-item command="Action 1">Action 1</el-dropdown-item>
-                <el-dropdown-item command="Action 2">Action 2</el-dropdown-item>
-                <el-dropdown-item command="Action 3">Action 3</el-dropdown-item>
-                <el-dropdown-item command="Action 4">Action 4</el-dropdown-item>
-                <el-dropdown-item command="Action 1">Action 1</el-dropdown-item>
-                <el-dropdown-item command="Action 2">Action 2</el-dropdown-item>
-                <el-dropdown-item command="Action 3">Action 3</el-dropdown-item>
-                <el-dropdown-item command="Action 4">Action 4</el-dropdown-item>
+                <template v-for="item in cityList" :key="item.value">
+                  <el-dropdown-item :command="item.value">{{ item.label }}</el-dropdown-item>
+                </template>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
         </div>
         <div class="location-item">
-          <el-dropdown trigger="click" ref="cityDropdown">
+          <el-dropdown trigger="click" ref="cityDropdown" @command="handleWeather">
             <span class="el-dropdown-link">
-              青山湖区<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              {{ nowStation }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>Action 1</el-dropdown-item>
-                <el-dropdown-item>Action 1</el-dropdown-item>
-                <el-dropdown-item>Action 1</el-dropdown-item>
-                <el-dropdown-item>Action 1</el-dropdown-item>
+                <template v-for="item in stationList" :key="item.value">
+                  <el-dropdown-item :command="item.value + '/' + item.label">{{ item.label }}</el-dropdown-item>
+                </template>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -140,7 +130,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { reactive, ref } from 'vue'
+import { getAllCity, getStationByCity } from "@/api/weatherStation"
 
 const props = defineProps({
   height: {
@@ -153,13 +144,60 @@ const props = defineProps({
   },
 })
 
+const nowCity = ref('南昌市')
+const nowStation = ref('青山湖区')
+
+const cityList: any = reactive([])
+const stationList: any = reactive([])
+
+getAllCity().then(res => {
+  const data = res.data
+  cityList.length = 0
+  data.forEach((item: any) => {
+    cityList.push({
+      label: item.station_city,
+      value: item.station_city
+    })
+  })
+  console.log(cityList);
+})
+
 const cityDropdown = ref()
 
-const handleCity = (item: any) => {
-  console.log(item);
+getStationByCity(nowCity.value).then(res => {
+  const data = res.data
+  stationList.length = 0
+  data.forEach((item: any) => {
+    stationList.push({
+      label: item.stationName,
+      value: item.stationLongitude + ',' + item.stationLatitude
+    })
+  })
+})
+
+const handleCity = (command: string) => {
+  nowCity.value = command
   if (!cityDropdown.value) return
-  cityDropdown.value.handleOpen()
+  getStationByCity(nowCity.value).then(res => {
+    const data = res.data
+    stationList.length = 0
+    data.forEach((item: any) => {
+      stationList.push({
+        label: item.stationName,
+        value: item.stationLongitude + ',' + item.stationLatitude
+      })
+    })
+    cityDropdown.value.handleOpen()
+  })
 }
+
+const emit = defineEmits(['nowLocation'])
+
+const handleWeather = (command: string) => {
+  nowStation.value = command.split('/')[1]
+  emit('nowLocation', command.split('/')[0])
+}
+
 </script>
 
 <style lang="scss" scoped>

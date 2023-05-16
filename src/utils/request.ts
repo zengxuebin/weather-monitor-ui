@@ -19,6 +19,8 @@ declare module "axios" {
     tempList: any,
     cityCount: any,
     typeCount: any,
+    precipitation: any,
+    desc: any,
   }
 }
 

@@ -2,7 +2,7 @@
   <div>
     <el-row>
       <el-col :span="24" class="today-weather">
-        <TodayWeather></TodayWeather>
+        <TodayWeather @nowLocation="handleLocation"></TodayWeather>
       </el-col>
     </el-row>
     <el-row justify="space-between">
@@ -35,11 +35,45 @@ import TodayWeather from "@/components/weather/TodayWeather.vue"
 import TodayEcharts from "@/components/echarts/index.vue"
 import AirQuality from "@/components/weather/AirQuality.vue"
 import { getStationByCity } from "@/api/weatherStation"
+import { getNowWeather } from "@/api/weatherNow"
+import { onMounted, ref } from "vue"
+import XEUtils from "xe-utils"
+
+const location = ref('')
+
+// 降水量
+const minutes = ref([Number])
+const precipitations = ref([Number])
+
+const handleLocation = (value: string) => {
+  location.value = value
+  getNowWeather(location.value).then(res => {
+    minutes.value.length = 0
+    precipitations.value.length = 0
+    options.title.text = res.desc
+    res.precipitation.forEach((item: any) => {
+      minutes.value.push(item.minutes);
+      precipitations.value.push(item.precipitation);
+    })
+  })
+}
+
+onMounted(() => {
+  getNowWeather('115.949044,28.689292').then(res => {
+    minutes.value.length = 0
+    precipitations.value.length = 0
+    res.precipitation.forEach((item: any) => {
+      minutes.value.push(item.minutes);
+      precipitations.value.push(item.precipitation);
+    })
+    options.title.text = res.desc
+  })
+})
 
 const options = {
   title: {
-    text: '未来三小时内不会下雨 您可以放心出门',
-    subtext: '2023-05-01 00:00:00',
+    text: '',
+    subtext: XEUtils.toDateString(new Date(), 'yyyy-MM-dd HH:mm:ss'),
     itemGap: 250,
     left: "center",
     subtextStyle: {
@@ -52,25 +86,29 @@ const options = {
   legend: {
     left: 'left'
   },
+  toolbox: {
+    show: true,
+    feature: {
+      magicType: { type: ['line', 'bar'] },
+    }
+  },
   xAxis: {
     name: '时间',
     type: 'category',
     boundaryGap: false,
-    data: ['现在', '30分钟', '60分钟', '90分钟', '120分钟', '150分钟', '180分钟'
-    ],
+    data: minutes.value,
   },
   yAxis: [
     {
       name: '降水量',
       type: 'value',
-      max: 100,
     },
   ],
   series: [
     {
       name: '降水量',
       type: 'line',
-      data: [0, 0, 0, 0, 0, 0, 0],
+      data: precipitations.value,
       areaStyle: {},
       showSymbol: false,
     },
