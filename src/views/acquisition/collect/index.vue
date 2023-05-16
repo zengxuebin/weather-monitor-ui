@@ -1,15 +1,75 @@
 <template>
   <div style="overflow: hidden; width: 100%; height: 100%;">
-    <vxe-grid ref='xGrid' v-bind="gridOptions"></vxe-grid>
+    <vxe-grid ref='xGrid' v-bind="gridOptions">
+      <template #toolbar_buttons>
+        <vxe-button status="primary" icon="vxe-icon-add" @click="collectData">采集</vxe-button>
+        <vxe-button status="primary" icon="vxe-icon-edit">编辑</vxe-button>
+        <vxe-button status="danger" icon="vxe-icon-delete">删除</vxe-button>
+      </template>
+    </vxe-grid>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
+import { getNowWeather, getPageWeatherData } from "@/api/weatherData"
+import { getAllStation } from "@/api/weatherStation"
 
 const xGrid = ref<VxeGridInstance>()
+
+const stationList: any = ref([])
+
+getAllStation().then(res => {
+  res.data.forEach((item: any) => {
+    stationList.value.push({
+      value: item.stationNo,
+      label: item.stationProvince + item.stationCity + item.stationName + '站'
+    })
+  })
+  const { formConfig } = gridOptions
+  let stationItem
+  if (formConfig?.items) {
+    stationItem = formConfig.items[0]
+  }
+  if (stationItem && stationItem.itemRender) {
+    stationItem.itemRender.options = stationList.value
+  }
+  console.log(stationList.value);
+})
+
+const collectData = () => {
+  ElMessageBox.confirm(
+    '此操作将采集此刻所有气象站的气象数据，是否继续？',
+    '数据采集',
+    {
+      confirmButtonText: '继续',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      getNowWeather().then(res => {
+        console.log(res);
+        ElMessage({
+          type: 'success',
+          message: '采集成功',
+        })
+      })
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '您已取消采集操作',
+      })
+    })
+}
+
+const editData = () => {
+  console.log('编辑按钮被点击');
+}
 
 const gridOptions = reactive<VxeGridProps>({
   border: true,
@@ -65,7 +125,7 @@ const gridOptions = reactive<VxeGridProps>({
     titleOverflow: true,
     items: [
       {
-        field: 'name',
+        field: 'stationNo',
         title: '站点名称',
         span: 6,
         itemRender: {
@@ -124,25 +184,9 @@ const gridOptions = reactive<VxeGridProps>({
     ]
   },
   toolbarConfig: {
-    buttons: [
-      {
-        status: 'primary',
-        name: '采集',
-        icon: 'vxe-icon-add'
-      },
-      {
-        status: 'primary',
-        name: '编辑',
-        icon: 'vxe-icon-edit'
-      },
-      // 删除选中行；会自动触发 ajax.delete 方法
-      {
-        code: 'delete',
-        status: 'danger',
-        name: '删除',
-        icon: 'vxe-icon-delete'
-      },
-    ],
+    slots: {
+      buttons: 'toolbar_buttons'
+    },
     refresh: true, // 显示刷新按钮
     export: true, // 显示导出按钮
     zoom: true, // 显示全屏按钮
@@ -163,76 +207,36 @@ const gridOptions = reactive<VxeGridProps>({
       // 当点击工具栏查询按钮或者手动提交指令 query或reload 时会被触发
       query: ({ page, sorts, filters, form }) => {
         return new Promise(resolve => {
-          setTimeout(() => {
-            const queryParams: any = Object.assign({}, form)
-            // 处理排序条件
-            const firstSort = sorts[0]
-            if (firstSort) {
-              queryParams.sort = firstSort.field
-              queryParams.order = firstSort.order
+          const queryParams: any = Object.assign({}, form)
+          // 处理排序条件
+          const firstSort = sorts[0]
+          if (firstSort) {
+            queryParams.sort = firstSort.field
+            queryParams.order = firstSort.order
+          }
+          // 处理筛选条件
+          filters.forEach(({ field, values }) => {
+            queryParams[field] = values.join(',')
+          })
+
+          // 请求参数
+          const data = {
+            pageNum: page.currentPage,
+            pageSize: page.pageSize,
+            entity: {
+              stationNo: form.stationNo,
+              windDirection: form.windDirection,
             }
-            // 处理筛选条件
-            filters.forEach(({ field, values }) => {
-              queryParams[field] = values.join(',')
-            })
-            // return Promise
-            const list = [
-              {
-                id: 100, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
-                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
-                pm10: 76, no2: 12, o3: 43, co: 1
-              },
-              {
-                id: 101, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
-                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
-                pm10: 76, no2: 12, o3: 43, co: 1
-              },
-              {
-                id: 102, stationNo: '江西省南昌市景德镇站', dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
-                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
-                pm10: 76, no2: 12, o3: 43, co: 1
-              },
-              {
-                id: 103, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
-                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
-                pm10: 76, no2: 12, o3: 43, co: 1
-              },
-              {
-                id: 104, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
-                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
-                pm10: 76, no2: 12, o3: 43, co: 1
-              },
-              {
-                id: 105, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
-                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
-                pm10: 76, no2: 12, o3: 43, co: 1
-              },
-              {
-                id: 106, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
-                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
-                pm10: 76, no2: 12, o3: 43, co: 1
-              },
-              {
-                id: 107, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
-                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
-                pm10: 76, no2: 12, o3: 43, co: 1
-              },
-              {
-                id: 108, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
-                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
-                pm10: 76, no2: 12, o3: 43, co: 1
-              },
-              {
-                id: 109, dataCollectTime: '2023-11-11 00:00:00', temperature: '38', humidity: 0.12, pressure: 840.4,
-                windSpeed: 13, windDirection: '西南', precipitation: 102, clouds: 29, visibility: 7000, aqi: 72, pm25: 52,
-                pm10: 76, no2: 12, o3: 43, co: 1
-              },
-            ]
+          }
+          console.log(data);
+          // 调用方法
+          getPageWeatherData(data).then(res => {
+            const data = res.data
             resolve({
-              records: list,
-              total: page.pageSize * 20
+              records: data.records,
+              total: data.total
             })
-          }, 500)
+          })
         })
       },
       delete: ({ body }) => {
@@ -260,13 +264,21 @@ const gridOptions = reactive<VxeGridProps>({
       title: '气象站点',
       align: "center",
       width: 180,
+      formatter: ({ cellValue }) => {
+        let res = ''
+        stationList.value.forEach((item: { value: any; label: any }) => {
+          if (cellValue === item.value) {
+            res = item.label;
+          }
+        })
+        return res
+      }
     },
     {
       field: 'dataCollectTime',
       title: '数据采集时间',
       align: "center",
       width: 180,
-      sortable: true,
     },
     {
       field: 'temperature',
@@ -297,6 +309,13 @@ const gridOptions = reactive<VxeGridProps>({
       title: '风向',
       align: "center",
       width: 100,
+      formatter: ({ cellValue }) => {
+        if (cellValue == '0') {
+          return '东北风'
+        } else {
+          return '东风'
+        }
+      }
     },
     {
       field: 'precipitation',
@@ -360,18 +379,16 @@ const gridOptions = reactive<VxeGridProps>({
   },
 })
 
-
-
 onMounted(() => {
   const sexList = [
-    { label: '东北风', value: '东北风' },
-    { label: '东风', value: '东风' },
-    { label: '东南风', value: '东南风' },
-    { label: '南风', value: '南风' },
-    { label: '西南风', value: '西南风' },
-    { label: '西风', value: '西风' },
-    { label: '西北风', value: '西北风' },
-    { label: '北风', value: '北风' },
+    { label: '东北风', value: '0' },
+    { label: '东风', value: '1' },
+    { label: '东南风', value: '2' },
+    { label: '南风', value: '3' },
+    { label: '西南风', value: '4' },
+    { label: '西风', value: '5' },
+    { label: '西北风', value: '6' },
+    { label: '北风', value: '7' },
   ]
   const { formConfig } = gridOptions
 
@@ -387,6 +404,7 @@ onMounted(() => {
 function disabledDate({ date }: any) {
   return date.getTime() > new Date().getTime()
 }
+
 </script>
 
 <style lang="scss" scoped></style>
