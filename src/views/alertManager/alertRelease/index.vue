@@ -5,26 +5,6 @@
         <el-tag size='large' type="warning">待发布</el-tag>
       </template>
     </vxe-grid>
-    <el-dialog v-model="dialogVisible" title="预警详情" width="50%" align-center>
-      <template #header="{ close, titleId, titleClass }">
-        <div class="my-header">
-          <span class="titleClass">预警详情</span>
-        </div>
-      </template>
-      <el-row :gutter="20" style="margin-bottom: 10px;">
-        <el-col :span="16">
-          <span class="title">高温橙色预警</span>
-        </el-col>
-        <el-col :span="8" style="text-align: right;">
-          2023-01-01 00:00:00
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24" class="main">
-          你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好你好在干嘛呢你好在干嘛呢你好在干嘛呢在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢
-        </el-col>
-      </el-row>
-    </el-dialog>
   </div>
 </template>
 
@@ -32,6 +12,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridListeners, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
+import { getPageReleaseAlert, generateReleaseAlert } from "@/api/weatherAlert"
 
 const xGrid = ref<VxeGridInstance>()
 
@@ -134,17 +115,24 @@ const gridOptions = reactive<VxeGridProps>({
         itemRender: {
           name: '$select',
           options: [
-            { label: '白色', value: 'level_01' },
-            { label: '蓝色', value: 'level_02' },
-            { label: '黄色', value: 'level_03' },
-            { label: '橙色', value: 'level_04' },
-            { label: '红色', value: 'level_05' },
+            { label: '白色', value: '白色' },
+            { label: '蓝色', value: '蓝色' },
+            { label: '黄色', value: '黄色' },
+            { label: '橙色', value: '橙色' },
+            { label: '红色', value: '红色' },
           ],
           props: {
-            placeholder: '请选择预警状态',
+            placeholder: '请选择预警级别',
           },
         }
       },
+      //       private String alertTitle;
+      // private String alertType;
+      // private String alertStatus;
+      // private String alertLevel;
+      // private String alertRuleId;
+      // private String alertSource;
+      // private String alertAreaId;
       {
         field: 'alertLevel',
         title: '预警规则',
@@ -170,7 +158,7 @@ const gridOptions = reactive<VxeGridProps>({
             { label: '空气重污染', value: 'type_15' },
           ],
           props: {
-            placeholder: '请选择预警状态',
+            placeholder: '请选择预警规则',
           },
         }
       },
@@ -277,62 +265,42 @@ const gridOptions = reactive<VxeGridProps>({
       // 当点击工具栏查询按钮或者手动提交指令 query或reload 时会被触发
       query: ({ page, sorts, filters, form }) => {
         return new Promise(resolve => {
-          setTimeout(() => {
-            const queryParams: any = Object.assign({}, form)
-            // 处理排序条件
-            const firstSort = sorts[0]
-            if (firstSort) {
-              queryParams.sort = firstSort.field
-              queryParams.order = firstSort.order
+          const queryParams: any = Object.assign({}, form)
+          // 处理排序条件
+          const firstSort = sorts[0]
+          if (firstSort) {
+            queryParams.sort = firstSort.field
+            queryParams.order = firstSort.order
+          }
+          // 处理筛选条件
+          filters.forEach(({ field, values }) => {
+            queryParams[field] = values.join(',')
+          })
+
+          // 请求参数
+          const data = {
+            pageNum: page.currentPage,
+            pageSize: page.pageSize,
+            entity: {
+              alertTitle: form.alertTitle,
+              alertType: form.alertType,
+              alertStatus: form.alertStatus,
+              alertLevel: form.alertType,
+              alertRuleId: form.alertRuleId,
+              alertSource: form.alertSource,
+              alertAreaId: form.alertAreaId,
             }
-            // 处理筛选条件
-            filters.forEach(({ field, values }) => {
-              queryParams[field] = values.join(',')
+          }
+          generateReleaseAlert().then(res => {
+            // 调用方法
+            getPageReleaseAlert(data).then(res => {
+              const data = res.data
+              resolve({
+                records: data.records,
+                total: data.total
+              })
             })
-            // return Promise
-            const list = [
-              {
-                alertId: 10001, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-              {
-                alertId: 10002, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-              {
-                alertId: 10003, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-              {
-                alertId: 10004, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-              {
-                alertId: 10005, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-              {
-                alertId: 1006, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-            ]
-            resolve({
-              records: list,
-              total: page.pageSize * 20
-            })
-          }, 500)
+          })
         })
       },
       delete: ({ body }) => {
@@ -360,14 +328,12 @@ const gridOptions = reactive<VxeGridProps>({
       title: '预警信息标题',
       align: "center",
       width: 150,
-      className: 'cell-click',
     },
     {
       field: 'alertRuleId',
       title: '关联预警规则',
       align: "center",
       width: 150,
-      className: 'cell-click'
     },
     {
       field: 'triggerValue',
@@ -434,17 +400,10 @@ const gridOptions = reactive<VxeGridProps>({
   },
 })
 
-const dialogVisible = ref(false)
-
 const gridEvent: VxeGridListeners = {
   cellClick({ row, column }) {
     console.log(row)
     console.log(column)
-    if (column.field === 'alertTitle') {
-      dialogVisible.value = true
-      console.log(dialogVisible.value);
-
-    }
   },
 }
 
