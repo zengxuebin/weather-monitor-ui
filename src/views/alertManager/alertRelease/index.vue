@@ -1,10 +1,32 @@
 <template>
   <div style="overflow: hidden; width: 100%; height: 100%;">
     <vxe-grid ref='xGrid' v-bind="gridOptions" v-on="gridEvent">
+      <template #toolbar_buttons>
+        <vxe-button status="primary" icon="vxe-icon-send" @click="releaseAlert">发布</vxe-button>
+        <vxe-button status="warning" icon="vxe-icon-undo" @click="ignoreAlert">忽略</vxe-button>
+        <vxe-button status="primary" icon="vxe-icon-edit" @click="editAlertDesc">编辑</vxe-button>
+        <vxe-button status="primary" icon="vxe-icon-delete">删除</vxe-button>
+      </template>
       <template #alertStatus="{ row }">
         <el-tag size='large' type="warning">待发布</el-tag>
       </template>
     </vxe-grid>
+    <el-dialog v-model="dialogFormVisible" title="预警详情" align-center>
+      <el-form :model="descForm">
+        <el-form-item label="预警详情">
+          <el-input v-model="descForm.alertDesc" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
+            placeholder="请输入预警详情" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="saveAlertDesc">
+            确认
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -13,8 +35,159 @@ import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridListeners, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
 import { getPageReleaseAlert, generateReleaseAlert } from "@/api/weatherAlert"
+import { getAllStation } from "@/api/weatherStation"
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { getAllAlertRule } from "@/api/alertRule"
+import { handleAlertIgnore } from "@/api/weatherAlert";
 
 const xGrid = ref<VxeGridInstance>()
+
+const dialogFormVisible = ref(false)
+const descForm = reactive({
+  alertDesc: '',
+})
+
+const editAlertDesc = () => {
+  if (xGrid.value) {
+    const rows = xGrid.value.getCheckboxRecords(true)
+    if (rows && rows.length == 1) {
+      dialogFormVisible.value = true
+      descForm.alertDesc = rows[0].alertDesc
+    } else {
+      ElMessage({
+        message: '您只能选择一条预警信息进行编辑',
+        type: 'warning',
+      })
+    }
+  }
+}
+
+const ignoreAlert = () => {
+  if (xGrid.value) {
+    const rows = xGrid.value.getCheckboxRecords(true)
+    if (rows && rows.length >= 1) {
+      ElMessageBox.confirm(
+        '此操作将忽略预警信息使其流程结束，是否继续？',
+        '警告',
+        {
+          confirmButtonText: '继续',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          let rowList: any[] = []
+          rows.forEach(item => {
+            console.log(item);
+            rowList.push(item.alertId)
+          })
+          handleAlertIgnore(rowList).then(res => {
+            if (xGrid.value) {
+              xGrid.value.commitProxy('query')
+            }
+            ElMessage({
+              type: 'success',
+              message: '忽略预警信息成功',
+            })
+          })
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '取消忽略预警信息',
+          })
+        })
+    } else {
+      ElMessage({
+        message: '您需要选择需要忽略的预警信息，此操作不可逆',
+        type: 'warning',
+      })
+    }
+  }
+}
+
+const releaseAlert = () => {
+  if (xGrid.value) {
+    const rows = xGrid.value.getCheckboxRecords(true)
+    if (rows && rows.length >= 1) {
+      ElMessageBox.confirm(
+        '此操作将发布预警信息使其流转到待推送状态，是否继续？',
+        '发布',
+        {
+          confirmButtonText: '继续',
+          cancelButtonText: '取消',
+          type: 'success',
+        }
+      )
+        .then(() => {
+          let rowList: any[] = []
+          rows.forEach(item => {
+            console.log(item);
+            rowList.push(item.alertId)
+          })
+          handleAlertIgnore(rowList).then(res => {
+            console.log(res.data);
+            ElMessage({
+              type: 'success',
+              message: '忽略预警信息成功',
+            })
+          })
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '取消忽略预警信息',
+          })
+        })
+    } else {
+      ElMessage({
+        message: '您需要选择需要忽略的预警信息，此操作不可逆',
+        type: 'warning',
+      })
+    }
+  }
+}
+
+const saveAlertDesc = () => {
+  dialogFormVisible.value = false
+  ElMessage({
+    message: '保存预警详情成功',
+    type: 'success',
+  })
+}
+
+const stationList: any = ref([])
+
+getAllStation().then(res => {
+  res.data.forEach((item: any) => {
+    stationList.value.push({
+      value: item.stationNo,
+      label: item.stationProvince + item.stationCity + item.stationName + '站'
+    })
+  })
+
+  const { formConfig } = gridOptions
+  let stationItem
+  if (formConfig?.items) {
+    stationItem = formConfig.items[6]
+  }
+  if (stationItem && stationItem.itemRender) {
+    stationItem.itemRender.options = stationList.value
+  }
+})
+
+const alertRuleList: any = ref([])
+
+getAllAlertRule().then(res => {
+  res.data.forEach((item: any) => {
+    alertRuleList.value.push({
+      value: item.ruleId,
+      label: item.ruleName,
+    })
+  })
+  console.log(res.data);
+
+})
 
 const gridOptions = reactive<VxeGridProps>({
   border: true,
@@ -134,7 +307,7 @@ const gridOptions = reactive<VxeGridProps>({
       // private String alertSource;
       // private String alertAreaId;
       {
-        field: 'alertLevel',
+        field: 'alertType',
         title: '预警规则',
         span: 6,
         folding: true,
@@ -221,30 +394,9 @@ const gridOptions = reactive<VxeGridProps>({
     ]
   },
   toolbarConfig: {
-    buttons: [
-      {
-        status: 'primary',
-        name: '发布',
-        icon: 'vxe-icon-send'
-      },
-      {
-        status: 'warning',
-        name: '忽略',
-        icon: 'vxe-icon-undo'
-      },
-      {
-        status: 'primary',
-        name: '编辑',
-        icon: 'vxe-icon-edit'
-      },
-      // 删除选中行；会自动触发 ajax.delete 方法
-      {
-        code: 'delete',
-        status: 'danger',
-        name: '删除',
-        icon: 'vxe-icon-delete'
-      },
-    ],
+    slots: {
+      buttons: 'toolbar_buttons'
+    },
     refresh: true, // 显示刷新按钮
     export: true, // 显示导出按钮
     zoom: true, // 显示全屏按钮
@@ -285,7 +437,7 @@ const gridOptions = reactive<VxeGridProps>({
               alertTitle: form.alertTitle,
               alertType: form.alertType,
               alertStatus: form.alertStatus,
-              alertLevel: form.alertType,
+              alertLevel: form.alertLevel,
               alertRuleId: form.alertRuleId,
               alertSource: form.alertSource,
               alertAreaId: form.alertAreaId,
@@ -330,10 +482,34 @@ const gridOptions = reactive<VxeGridProps>({
       width: 150,
     },
     {
+      field: 'alertAreaId',
+      title: '影响区域',
+      align: "center",
+      width: 180,
+      formatter: ({ cellValue }) => {
+        let res = ''
+        stationList.value.forEach((item: { value: any; label: any }) => {
+          if (cellValue === item.value) {
+            res = item.label;
+          }
+        })
+        return res
+      }
+    },
+    {
       field: 'alertRuleId',
       title: '关联预警规则',
       align: "center",
       width: 150,
+      formatter: ({ cellValue }) => {
+        let res = ''
+        alertRuleList.value.forEach((item: { value: any; label: any }) => {
+          if (cellValue === item.value) {
+            res = item.label;
+          }
+        })
+        return res
+      }
     },
     {
       field: 'triggerValue',
@@ -359,12 +535,6 @@ const gridOptions = reactive<VxeGridProps>({
     {
       field: 'alertLevel',
       title: '预警级别',
-      align: "center",
-      width: 120,
-    },
-    {
-      field: 'alertAreaId',
-      title: '影响区域',
       align: "center",
       width: 120,
     },
@@ -401,10 +571,6 @@ const gridOptions = reactive<VxeGridProps>({
 })
 
 const gridEvent: VxeGridListeners = {
-  cellClick({ row, column }) {
-    console.log(row)
-    console.log(column)
-  },
 }
 
 onMounted(() => {

@@ -58,11 +58,24 @@ const collectData = () => {
       getNowWeather().then(res => {
         console.log(res);
         loading.close()
+        if (xGrid.value) {
+          xGrid.value.commitProxy('query')
+        }
         ElMessage({
           type: 'success',
           message: '采集成功',
         })
       })
+        .catch(() => {
+          loading.close()
+          if (xGrid.value) {
+            xGrid.value.commitProxy('query')
+          }
+          ElMessage({
+            type: 'success',
+            message: '采集成功',
+          })
+        })
     })
     .catch(() => {
       ElMessage({
