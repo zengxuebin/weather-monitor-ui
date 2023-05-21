@@ -3,7 +3,7 @@
     <el-row :gutter="16">
       <el-col :span="6">
         <div class="statistic-card">
-          <el-statistic :value="12">
+          <el-statistic :value="2">
             <template #title>
               <div style="display: inline-flex; align-items: center; font-size: 14px;">
                 今日活跃用户数量
@@ -19,7 +19,7 @@
             <div class="footer-item">
               <span>比昨日新增</span>
               <span class="green">
-                5
+                0
                 <el-icon>
                   <CaretTop />
                 </el-icon>
@@ -31,7 +31,7 @@
       </el-col>
       <el-col :span="6">
         <div class="statistic-card">
-          <el-statistic :value="123456">
+          <el-statistic :value="338">
             <template #title>
               <div style="display: inline-flex; align-items: center; font-size: 14px;">
                 累计预警条数
@@ -59,7 +59,7 @@
       </el-col>
       <el-col :span="6">
         <div class="statistic-card">
-          <el-statistic :value="123456">
+          <el-statistic :value="111">
             <template #title>
               <div style="display: inline-flex; align-items: center; font-size: 14px;">
                 累计气象站点
@@ -74,10 +74,10 @@
           <div class="statistic-footer">
             <div class="footer-item">
               <span>比昨日新增</span>
-              <span class="red">
-                12
+              <span class="green">
+                0
                 <el-icon>
-                  <CaretBottom />
+                  <CaretTop />
                 </el-icon>
               </span>
               个
@@ -87,7 +87,7 @@
       </el-col>
       <el-col :span="6">
         <div class="statistic-card">
-          <el-statistic :value="14562">
+          <el-statistic :value="1238">
             <template #title>
               <div style="display: inline-flex; align-items: center; font-size: 14px;">
                 累计气象数据总数
@@ -101,7 +101,7 @@
           </el-statistic>
           <div class="statistic-footer">
             <div class="footer-item">
-              <span>比昨日新增</span>
+              <span>比昨日下降</span>
               <span class="red">
                 123
                 <el-icon>
@@ -143,7 +143,7 @@
                   今日日期
                 </div>
               </template>
-              2023-05-01 00:00:00
+              2023-05-20
             </el-descriptions-item>
             <el-descriptions-item>
               <template #label>
@@ -288,7 +288,7 @@ import TodayEcharts from '@/components/echarts/index.vue'
 
 const options = {
   title: {
-    text: '2023-05-01 00:00:00'
+    text: '2023-05-20'
   },
   tooltip: {
     trigger: 'axis',
@@ -307,10 +307,10 @@ const options = {
     name: '日期',
     type: 'category',
     boundaryGap: false,
-    data: ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00',
-      '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
-      '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
-      '18:00', '19:00', '20:00', '21:00', '22:00', '23:00',
+    data: ['14:00', '15:00', '16:00', '17:00', '18:00', '19:00',
+      '20:00', '21:00', '22:00', '23:00', '00:00', '01:00',
+      '02:00', '03:00', '04:00', '05:00', '06:00', '07:00',
+      '08:00', '09:00', '10:00', '11:00', '12:00', '13:00',
     ]
   },
   yAxis: [
@@ -334,7 +334,8 @@ const options = {
     {
       name: '体感温度',
       type: 'line',
-      data: [36, 11, 28, 11, 12, 12, 9, 36, 11, 28, 11, 12, 12, 9, 36, 11, 28, 11, 12, 12, 9, 36, 11, 28, 11, 12, 12, 9],
+      data: [27.3, 27.7, 25.76, 25.41, 24.96, 24.65, 24.49, 24.4, 24.47, 24.47, 24.6,
+       25, 24.56, 24.28, 23.77, 23.12, 22.43, 21.68, 20.93, 20.16, 19.26, 19, 19, 19, 19, 19, 19, 19],
       markPoint: {
         data: [
           { type: 'max', name: 'Max' },
@@ -349,7 +350,9 @@ const options = {
     {
       name: '降水量',
       type: 'line',
-      data: [0.08, 3.12, 4.23, 12.22, 12, 23.46, 0.08, 3.12, 4.23, 12.22, 12, 23.46, 0.08, 3.12, 4.23, 12.22, 12, 23.46, 0.08, 3.12, 4.23, 12.22, 12, 23.46,],
+      data: [0, 0.0834, 2.3787, 1.1157, 0.2295, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0.1201, 0.076, 0.2455, 0.0909, 0.1234, 0.0931],
       areaStyle: {},
       showSymbol: false,
       yAxisIndex: 1,

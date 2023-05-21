@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import useUserStore from "@/stores/user"
 import useRouterStore from "@/stores/router"
+import { ref } from 'vue'
+
+const isAdmin = ref('')
 
 export const routes = [
   {
@@ -224,19 +227,9 @@ export const routes = [
     component: () => import('@/layout/index.vue'),
     children: [
       {
-        path: '/alert-analysis/information',
-        name: 'information',
-        hidden: false,
-        meta: {
-          title: '预警统计分析',
-          icon: 'vxe-icon-chart-line'
-        },
-        component: () => import('@/views/alertAnalysis/information/index.vue')
-      },
-      {
         path: '/alert-analysis/view-alert-push',
         name: 'viewAlert',
-        hidden: false,
+        hidden: isAdmin.value === 'admin',
         meta: {
           title: '查询预警信息',
           icon: 'vxe-icon-search'
@@ -336,7 +329,7 @@ router.beforeEach((to, from, next) => {
       if (useUserStore().roles.length === 0) {
         useUserStore().getUserInfo().then(() => {
           // 管理员标志
-          console.log(useUserStore().roles[0]);
+          isAdmin.value = useUserStore().roles[0]
           useRouterStore().generateRoutes().then((routers: any) => {
             routers.forEach((route: any) => {
               // router.addRoute(route)

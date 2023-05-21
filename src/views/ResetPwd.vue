@@ -7,7 +7,7 @@
             <el-icon size="32" color="#00796a">
               <List />
             </el-icon>
-            <span class="alert-time">推送时间：2023-05-01 00:00:00</span>
+            <span class="alert-time">推送时间：2023-05-01</span>
           </div>
         </el-col>
         <el-col :span="6" :offset="6" style="line-height: 32px;">

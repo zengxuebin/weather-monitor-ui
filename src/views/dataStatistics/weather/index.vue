@@ -8,11 +8,11 @@
               <span>城市所占气象站点数量统计</span>
             </div>
           </template>
-          <StationEchart :options="StationOption" height="250px"></StationEchart>
+          <StationEchart :options="StationOption" height="300px"></StationEchart>
         </el-card>
       </el-col>
       <el-col :span="6" style="border: 1px solid;">
-        <MapEchart :options="mapOption" height="340px"></MapEchart>
+        <MapEchart :options="mapOption" height="380px"></MapEchart>
       </el-col>
       <el-col :span="9">
         <el-card class="today-card">
@@ -21,7 +21,7 @@
               <span>气象站点类型统计</span>
             </div>
           </template>
-          <StationEchart :options="typeOption" height="250px"></StationEchart>
+          <StationEchart :options="typeOption" height="300px"></StationEchart>
         </el-card>
       </el-col>
     </el-row>
@@ -33,145 +33,57 @@
         </div>
       </template>
       <div class="progress">
-        <el-progress type="circle" :percentage="3" color="#00796a">
+        <el-progress type="circle" :percentage="30" color="#00796a">
           <el-row>
             <el-col>
-              <el-text>雪</el-text>
+              <el-text>晴</el-text>
             </el-col>
             <el-col style="margin-top: 5px;">
-              <el-text>1天</el-text>
+              <el-text>42天</el-text>
             </el-col>
           </el-row>
         </el-progress>
-        <el-progress type="circle" :percentage="19" color="#00796a">
+        <el-progress type="circle" :percentage="36" color="#00796a">
           <el-row>
             <el-col>
-              <el-text>雪</el-text>
+              <el-text>阴</el-text>
             </el-col>
             <el-col style="margin-top: 5px;">
-              <el-text>1天</el-text>
+              <el-text>78天</el-text>
             </el-col>
           </el-row>
         </el-progress>
-        <el-progress type="circle" :percentage="3" color="#00796a">
+        <el-progress type="circle" :percentage="30" color="#00796a">
           <el-row>
             <el-col>
-              <el-text>雪</el-text>
+              <el-text>雨</el-text>
             </el-col>
             <el-col style="margin-top: 5px;">
-              <el-text>1天</el-text>
+              <el-text>28天</el-text>
             </el-col>
           </el-row>
         </el-progress>
-        <el-progress type="circle" :percentage="3" color="#00796a">
+        <el-progress type="circle" :percentage="0" color="#00796a">
           <el-row>
             <el-col>
               <el-text>雪</el-text>
             </el-col>
             <el-col style="margin-top: 5px;">
-              <el-text>1天</el-text>
+              <el-text>0天</el-text>
             </el-col>
           </el-row>
         </el-progress>
-        <el-progress type="circle" :percentage="3" color="#00796a">
+        <el-progress type="circle" :percentage="4" color="#00796a">
           <el-row>
             <el-col>
-              <el-text>雪</el-text>
+              <el-text>其它</el-text>
             </el-col>
             <el-col style="margin-top: 5px;">
-              <el-text>1天</el-text>
-            </el-col>
-          </el-row>
-        </el-progress>
-        <el-progress type="circle" :percentage="3" color="#00796a">
-          <el-row>
-            <el-col>
-              <el-text>雪</el-text>
-            </el-col>
-            <el-col style="margin-top: 5px;">
-              <el-text>1天</el-text>
-            </el-col>
-          </el-row>
-        </el-progress>
-        <el-progress type="circle" :percentage="3" color="#00796a">
-          <el-row>
-            <el-col>
-              <el-text>雪</el-text>
-            </el-col>
-            <el-col style="margin-top: 5px;">
-              <el-text>1天</el-text>
+              <el-text>18天</el-text>
             </el-col>
           </el-row>
         </el-progress>
       </div>
-      <el-descriptions :column="3" border :title="dateRange">
-        <el-descriptions-item class="descriptions">
-          <template #label>
-            <div class="cell-item">
-              <el-icon>
-                <Location />
-              </el-icon>
-              所在地点
-            </div>
-          </template>
-          江西省南昌市
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template #label>
-            <div class="cell-item">
-              <el-icon>
-                <Calendar />
-              </el-icon>
-              今日日期
-            </div>
-          </template>
-          2023-05-01 00:00:00
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template #label>
-            <div class="cell-item">
-              <el-icon>
-                <MostlyCloudy />
-              </el-icon>
-              天气现象
-            </div>
-          </template>
-          多云<i class="vxe-icon-cloudy"></i>
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template #label>
-            <div class="cell-item">
-              <el-icon>
-                <Odometer />
-              </el-icon>
-              平均温度
-            </div>
-          </template>
-          23.75°C
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template #label>
-            <div class="cell-item">
-              <el-icon>
-                <Odometer />
-              </el-icon>
-              平均温度
-            </div>
-          </template>
-          23.75°C
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template #label>
-            <div class="cell-item">
-              <el-icon>
-                <Odometer />
-              </el-icon>
-              平均温度
-            </div>
-          </template>
-          23.75°C
-        </el-descriptions-item>
-      </el-descriptions>
     </el-card>
   </div>
 </template>

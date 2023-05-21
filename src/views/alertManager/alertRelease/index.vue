@@ -38,7 +38,7 @@ import { getPageReleaseAlert, generateReleaseAlert } from "@/api/weatherAlert"
 import { getAllStation } from "@/api/weatherStation"
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getAllAlertRule } from "@/api/alertRule"
-import { handleAlertIgnore } from "@/api/weatherAlert";
+import { handleAlertIgnore, handleAlertRelease } from "@/api/weatherAlert";
 
 const xGrid = ref<VxeGridInstance>()
 
@@ -67,7 +67,7 @@ const ignoreAlert = () => {
     const rows = xGrid.value.getCheckboxRecords(true)
     if (rows && rows.length >= 1) {
       ElMessageBox.confirm(
-        '此操作将忽略预警信息使其流程结束，是否继续？',
+        '此操作将忽略预警信息使其流程结束，此操作不可逆，是否继续？',
         '警告',
         {
           confirmButtonText: '继续',
@@ -87,7 +87,7 @@ const ignoreAlert = () => {
             }
             ElMessage({
               type: 'success',
-              message: '忽略预警信息成功',
+              message: '忽略预警信息成功，所选预警信息流程已终止',
             })
           })
         })
@@ -99,7 +99,7 @@ const ignoreAlert = () => {
         })
     } else {
       ElMessage({
-        message: '您需要选择需要忽略的预警信息，此操作不可逆',
+        message: '您需要选择需要忽略的预警信息',
         type: 'warning',
       })
     }
@@ -125,18 +125,20 @@ const releaseAlert = () => {
             console.log(item);
             rowList.push(item.alertId)
           })
-          handleAlertIgnore(rowList).then(res => {
-            console.log(res.data);
+          handleAlertRelease(rowList).then(res => {
+            if (xGrid.value) {
+              xGrid.value.commitProxy('query')
+            }
             ElMessage({
               type: 'success',
-              message: '忽略预警信息成功',
+              message: '发布预警信息成功，等待相关工作人员推送',
             })
           })
         })
         .catch(() => {
           ElMessage({
             type: 'info',
-            message: '取消忽略预警信息',
+            message: '取消发布预警信息',
           })
         })
     } else {
@@ -500,7 +502,7 @@ const gridOptions = reactive<VxeGridProps>({
       field: 'alertRuleId',
       title: '关联预警规则',
       align: "center",
-      width: 150,
+      width: 180,
       formatter: ({ cellValue }) => {
         let res = ''
         alertRuleList.value.forEach((item: { value: any; label: any }) => {

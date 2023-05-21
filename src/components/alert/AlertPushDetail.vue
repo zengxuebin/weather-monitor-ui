@@ -8,7 +8,7 @@
               <el-icon size="32" color="#00796a">
                 <List />
               </el-icon>
-              <span class="alert-time">推送时间：2023-05-01 00:00:00</span>
+              <span class="alert-time">推送时间：{{ alert.triggerTime }}</span>
             </div>
           </el-col>
           <el-col :span="6" :offset="6" style="line-height: 32px;">
@@ -25,54 +25,54 @@
                   <span>
                     预警标题：
                   </span>
-                  雷电黄色预警
+                  {{ alert.alertTitle }}
                 </el-col>
                 <el-col :span="6">
                   <span>
                     预警单位：
                   </span>
-                  国家气象预警中心
+                  {{ alert.alertSource }}
                 </el-col>
                 <el-col :span="4">
                   <span>
                     预警类型：
                   </span>
-                  雷电
+                  {{ alert.alertType }}
                 </el-col>
                 <el-col :span="4">
                   <span>
                     预警级别：
                   </span>
-                  黄色
+                  {{ alert.alertLevel }}
                 </el-col>
                 <el-col :span="6">
                   <span>
                     影响区域：
                   </span>
-                  九江、南昌、宜春等
+                  {{ alert.alertAreaId }}
                 </el-col>
                 <el-col :span="7">
                   <span>
                     预警开始时间：
                   </span>
-                  2023-05-01 00:00:00
+                  {{ alert.startTime }}
                 </el-col>
                 <el-col :span="7">
                   <span>
                     预警结束时间：
                   </span>
-                  2023-05-01 00:00:00
+                  {{ alert.endTime }}
                 </el-col>
                 <el-col :span="7">
                   <span>
                     预警发布时间：
                   </span>
-                  2023-05-01 00:00:00
+                  {{ alert.triggerTime }}
                 </el-col>
               </el-row>
               <el-row :gutter="20">
-                <el-col :span="24" style="text-indent: 2em">
-                  赣州市气象台2023年05月06日13时50分发布暴雨黄色预警信号：过去3小时内我市南康区、崇义县、大余县的部分乡镇已出现50毫米以上的降水，预计未来6小时内，章贡区、经开区、蓉江新区、赣县区、南康区、上犹县、大余县、信丰县、崇义县、于都县的部分地区降水可达50毫米以上，局地伴有短时强降水、雷电等强对流天气，请注意防范强降雨可能引发的城乡内涝、中小河流洪水、山洪和地质灾害。
+                <el-col :span="24" style="text-indent: 2em; line-height: 30px;">
+                  {{ alert.alertDesc }}
                 </el-col>
               </el-row>
             </div>
@@ -80,7 +80,7 @@
         </el-row>
       </div>
       <div class="bottom">
-        <span style="cursor: pointer;" @click="handleAlertDetails(alertId)">
+        <span style="cursor: pointer;" @click="handleAlertDetails()">
           <el-icon>
             <HelpFilled />
           </el-icon>
@@ -109,7 +109,7 @@
                       预警规则名称
                     </div>
                   </template>
-                  ddd
+                  蓝色高温预警
                 </el-descriptions-item>
                 <el-descriptions-item>
                   <template #label>
@@ -117,7 +117,7 @@
                       预警监测指标
                     </div>
                   </template>
-                  42
+                  26
                 </el-descriptions-item>
                 <el-descriptions-item>
                   <template #label>
@@ -133,7 +133,7 @@
                       预警规则阈值
                     </div>
                   </template>
-                  <el-tag size="small">132</el-tag>
+                  <el-tag size="small">25</el-tag>
                 </el-descriptions-item>
                 <el-descriptions-item>
                   <template #label>
@@ -141,7 +141,7 @@
                       预警规则描述
                     </div>
                   </template>
-                  你好你好你好你好你好你好
+                  当温度达到或超过 28.0 度时触发预警
                 </el-descriptions-item>
               </el-descriptions>
             </div>
@@ -151,10 +151,10 @@
                 <el-descriptions-item>
                   <template #label>
                     <div>
-                      站点监测号
+                      站点监测编号
                     </div>
                   </template>
-                  36021
+                  {{ station.stationNo }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                   <template #label>
@@ -162,7 +162,7 @@
                       站点所在省份
                     </div>
                   </template>
-                  江西省
+                  {{ station.stationProvince }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                   <template #label>
@@ -170,7 +170,7 @@
                       站点所在市
                     </div>
                   </template>
-                  南昌市
+                  {{ station.stationCity }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                   <template #label>
@@ -178,7 +178,7 @@
                       站点名称
                     </div>
                   </template>
-                  青山湖区
+                  {{ station.stationName }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                   <template #label>
@@ -186,7 +186,7 @@
                       站点所在经度
                     </div>
                   </template>
-                  1823.1231
+                  {{ station.stationLongitude }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                   <template #label>
@@ -194,7 +194,7 @@
                       站点所在纬度
                     </div>
                   </template>
-                  1823.1231
+                  {{ station.stationLatitude }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                   <template #label>
@@ -202,7 +202,7 @@
                       站点所在高度
                     </div>
                   </template>
-                  841.1
+                  {{ station.stationHeight }}
                 </el-descriptions-item>
                 <el-descriptions-item>
                   <template #label>
@@ -216,23 +216,13 @@
             <div class="sub-title">关联预警流程</div>
             <div class="detail-main">
               <el-table :data="tableData" style="width: 100%" border>
-                <el-table-column prop="date" label="Date" width="180" align="center" />
-                <el-table-column prop="name" label="Name" width="180" align="center" />
-                <el-table-column prop="address" label="Address" align="center" />
+                <el-table-column prop="date" label="操作时间" width="180" align="center" />
+                <el-table-column prop="name" label="操作人" width="180" align="center" />
+                <el-table-column prop="address" label="操作结果" align="center" />
               </el-table>
             </div>
           </el-main>
-          <el-aside width="200px"><el-timeline>
-              <el-timeline-item v-for="(activity, index) in activities" :key="index" :color="activity.color" size="large"
-                :timestamp="activity.timestamp">
-                {{ activity.content }}
-                <div v-if="activities.length > 0">
-                  <slot name="solt" v-if="activity.content === 'test'">
-                    <span>审批不通过</span>
-                  </slot>
-                </div>
-              </el-timeline-item>
-            </el-timeline></el-aside>
+          
         </el-container>
 
       </template>
@@ -241,58 +231,74 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
+import { getAllStation } from "@/api/weatherStation";
+
+const props = defineProps({
+  alert: {
+    type: Object,
+    default: {}
+  },
+})
+
+const station = reactive({
+  stationNo: '',
+  stationCity: '',
+  stationLatitude: '',
+  stationLongitude: '',
+  stationName: '',
+  stationProvince: '',
+  statonType: '',
+  stationHeight: ''
+})
+
+getAllStation().then(res => {
+  res.data.forEach((item: any) => {
+    if (alert.value.alertAreaId === item.stationNo) {
+      station.stationNo = item.stationNo
+      station.stationCity = item.stationCity
+      station.stationLatitude = item.stationLatitude
+      station.stationLongitude = item.stationLongitude
+      station.stationName = item.stationName
+      station.stationProvince = item.stationProvince
+      station.statonType = item.stationType
+      station.stationHeight = item.stationHeight
+      alert.value.alertAreaId = item.stationProvince + item.stationCity + item.stationName
+    }
+  })
+})
+
+
+const alert = ref({})
+alert.value = props.alert
+
+console.log(alert.value);
 
 const alertId = ref()
 const detailDrawer = ref(false)
 
-const handleAlertDetails = (id: any) => {
+const handleAlertDetails = () => {
   detailDrawer.value = true
 }
 
 const tableData = [
   {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    date: '2023-05-20 13:24:40',
+    name: 'admin',
+    address: '系统触发',
   },
   {
-    date: '2016-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    date: '2023-05-20 13:26:28',
+    name: 'admin',
+    address: '已发布',
   },
   {
-    date: '2016-05-04',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-01',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    date: '2023-05-20 13:27:12',
+    name: 'admin',
+    address: '已推送',
   },
 ]
 
-const activities = [
-  {
-    content: 'Custom icon',
-    timestamp: '2018-04-12 20:46:00',
-    color: '#00796a',
-  },
-  {
-    content: 'Custom icon',
-    timestamp: '2018-04-12 20:46:00',
-    color: '#00796a',
-  },
-  {
-    content: 'Custom icon',
-    timestamp: '2018-04-12 20:46:00',
-  },
-  {
-    content: 'test',
-    timestamp: '2018-04-12 20:46:00',
-  },
-]
 </script>
 
 <style lang="scss" scoped>

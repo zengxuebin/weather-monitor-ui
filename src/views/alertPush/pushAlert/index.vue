@@ -1,6 +1,10 @@
 <template>
   <div style="overflow: hidden; width: 100%; height: 100%;">
     <vxe-grid ref='xGrid' v-bind="gridOptions" v-on="gridEvent">
+      <template #toolbar_buttons>
+        <vxe-button status="primary" icon="vxe-icon-envelope-fill" @click="pushAlert">推送</vxe-button>
+        <vxe-button status="warning" icon="vxe-icon-undo" @click="ignoreAlert">忽略</vxe-button>
+      </template>
       <template #alertStatus="{ row }">
         <el-tag size='large' type="warning">待推送</el-tag>
       </template>
@@ -13,15 +17,15 @@
       </template>
       <el-row :gutter="20" style="margin-bottom: 10px;">
         <el-col :span="16">
-          <el-text class="title">高温橙色预警</el-text>
+          <span class="title">{{ alertDetail.alertTitle }}</span>
         </el-col>
         <el-col :span="8" style="text-align: right;">
-          2023-01-01 00:00:00
+          {{ alertDetail.alertTime }}
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24" class="main">
-          你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好你好在干嘛呢你好在干嘛呢你好在干嘛呢在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢你好在干嘛呢
+          {{ alertDetail.alertDesc }}
         </el-col>
       </el-row>
     </el-dialog>
@@ -32,8 +36,146 @@
 import { onMounted, reactive, ref } from 'vue'
 import type { VXETable, VxeGridInstance, VxeGridListeners, VxeGridProps } from 'vxe-table'
 import XEUtils from 'xe-utils'
+import { getPagepushAlert, handleAlertIgnore, handleAlertPush } from "@/api/weatherAlert"
+import { getAllStation } from '@/api/weatherStation'
+import { getAllAlertRule } from '@/api/alertRule'
+import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
+
+getAllAlertRule().then(res => {
+  res.data.forEach((item: any) => {
+    alertRuleList.value.push({
+      value: item.ruleId,
+      label: item.ruleName,
+    })
+  })
+  console.log(res.data);
+
+})
+
+getAllStation().then(res => {
+  res.data.forEach((item: any) => {
+    stationList.value.push({
+      value: item.stationNo,
+      label: item.stationProvince + item.stationCity + item.stationName + '站'
+    })
+  })
+
+  const { formConfig } = gridOptions
+  let stationItem
+  if (formConfig?.items) {
+    stationItem = formConfig.items[6]
+  }
+  if (stationItem && stationItem.itemRender) {
+    stationItem.itemRender.options = stationList.value
+  }
+})
+
+const fullscreenLoading = ref(false)
+
+const pushAlert = () => {
+  if (xGrid.value) {
+    const rows = xGrid.value.getCheckboxRecords(true)
+    if (rows && rows.length >= 1) {
+      ElMessageBox.confirm(
+        '此操作将推送预警信息至所有用户邮箱以及站内，是否继续？',
+        '推送',
+        {
+          confirmButtonText: '继续',
+          cancelButtonText: '取消',
+          type: 'success',
+        }
+      )
+        .then(() => {
+          let rowList: any[] = []
+          rows.forEach(item => {
+            rowList.push(item.alertId)
+          })
+          console.log(rowList);
+          const loading = ElLoading.service({
+            lock: true,
+            text: '正在推送中',
+          })
+          handleAlertPush(rowList).then(res => {
+            loading.close()
+            if (xGrid.value) {
+              xGrid.value.commitProxy('query')
+            }
+            ElMessage({
+              type: 'success',
+              message: '推送预警信息成功，用户已收到预警信息',
+            })
+          })
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '取消推送预警信息',
+          })
+        })
+    } else {
+      ElMessage({
+        message: '您需要选择需要推送给用户的预警信息',
+        type: 'warning',
+      })
+    }
+  }
+}
+
+const ignoreAlert = () => {
+  if (xGrid.value) {
+    const rows = xGrid.value.getCheckboxRecords(true)
+    if (rows && rows.length >= 1) {
+      ElMessageBox.confirm(
+        '此操作将忽略预警信息使其流程结束，此操作不可逆，是否继续？',
+        '警告',
+        {
+          confirmButtonText: '继续',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          let rowList: any[] = []
+          rows.forEach(item => {
+            console.log(item);
+            rowList.push(item.alertId)
+          })
+          handleAlertIgnore(rowList).then(res => {
+            if (xGrid.value) {
+              xGrid.value.commitProxy('query')
+            }
+            ElMessage({
+              type: 'success',
+              message: '忽略预警信息成功，所选预警信息流程已终止',
+            })
+          })
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '取消忽略预警信息',
+          })
+        })
+    } else {
+      ElMessage({
+        message: '您需要选择需要忽略的预警信息',
+        type: 'warning',
+      })
+    }
+  }
+}
+
+const stationList: any = ref([])
+
+const alertRuleList: any = ref([])
 
 const xGrid = ref<VxeGridInstance>()
+
+const alertDetail = reactive({
+  alertTitle: '',
+  alertDesc: '',
+  alertTime: '',
+})
 
 const gridOptions = reactive<VxeGridProps>({
   border: true,
@@ -233,18 +375,9 @@ const gridOptions = reactive<VxeGridProps>({
     ]
   },
   toolbarConfig: {
-    buttons: [
-      {
-        status: 'primary',
-        name: '推送',
-        icon: 'vxe-icon-envelope-fill'
-      },
-      {
-        status: 'warning',
-        name: '忽略',
-        icon: 'vxe-icon-undo'
-      },
-    ],
+    slots: {
+      buttons: 'toolbar_buttons'
+    },
     refresh: true, // 显示刷新按钮
     export: true, // 显示导出按钮
     zoom: true, // 显示全屏按钮
@@ -265,62 +398,38 @@ const gridOptions = reactive<VxeGridProps>({
       // 当点击工具栏查询按钮或者手动提交指令 query或reload 时会被触发
       query: ({ page, sorts, filters, form }) => {
         return new Promise(resolve => {
-          setTimeout(() => {
-            const queryParams: any = Object.assign({}, form)
-            // 处理排序条件
-            const firstSort = sorts[0]
-            if (firstSort) {
-              queryParams.sort = firstSort.field
-              queryParams.order = firstSort.order
+          const queryParams: any = Object.assign({}, form)
+          // 处理排序条件
+          const firstSort = sorts[0]
+          if (firstSort) {
+            queryParams.sort = firstSort.field
+            queryParams.order = firstSort.order
+          }
+          // 处理筛选条件
+          filters.forEach(({ field, values }) => {
+            queryParams[field] = values.join(',')
+          })
+          // 请求参数
+          const data = {
+            pageNum: page.currentPage,
+            pageSize: page.pageSize,
+            entity: {
+              alertTitle: form.alertTitle,
+              alertType: form.alertType,
+              alertStatus: form.alertStatus,
+              alertLevel: form.alertLevel,
+              alertRuleId: form.alertRuleId,
+              alertSource: form.alertSource,
+              alertAreaId: form.alertAreaId,
             }
-            // 处理筛选条件
-            filters.forEach(({ field, values }) => {
-              queryParams[field] = values.join(',')
-            })
-            // return Promise
-            const list = [
-              {
-                alertId: 10001, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-              {
-                alertId: 10002, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-              {
-                alertId: 10003, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-              {
-                alertId: 10004, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-              {
-                alertId: 10005, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-              {
-                alertId: 1006, alertTitle: '高温橙色预警', triggerValue: '41.2', alertType: '天气预警',
-                alertDesc: 'test', alertRuleId: '12', alertLevel: '橙色', alertAreaId: '南昌',
-                triggerTime: '2022-01-01 00:00:00', startTime: '2022-01-01 00:00:00',
-                endTime: '2022-01-01 00:00:00', alertStatus: '0', alertSource: '国家预警信息发布中心',
-              },
-            ]
+          }
+          getPagepushAlert(data).then(res => {
+            const data = res.data
             resolve({
-              records: list,
-              total: page.pageSize * 20
+              records: data.records,
+              total: data.total
             })
-          }, 500)
+          })
         })
       },
       delete: ({ body }) => {
@@ -351,11 +460,34 @@ const gridOptions = reactive<VxeGridProps>({
       className: 'cell-click',
     },
     {
+      field: 'alertAreaId',
+      title: '影响区域',
+      align: "center",
+      width: 180,
+      formatter: ({ cellValue }) => {
+        let res = ''
+        stationList.value.forEach((item: { value: any; label: any }) => {
+          if (cellValue === item.value) {
+            res = item.label;
+          }
+        })
+        return res
+      }
+    },
+    {
       field: 'alertRuleId',
       title: '关联预警规则',
       align: "center",
-      width: 150,
-      className: 'cell-click'
+      width: 180,
+      formatter: ({ cellValue }) => {
+        let res = ''
+        alertRuleList.value.forEach((item: { value: any; label: any }) => {
+          if (cellValue === item.value) {
+            res = item.label;
+          }
+        })
+        return res
+      }
     },
     {
       field: 'triggerValue',
@@ -381,12 +513,6 @@ const gridOptions = reactive<VxeGridProps>({
     {
       field: 'alertLevel',
       title: '预警级别',
-      align: "center",
-      width: 120,
-    },
-    {
-      field: 'alertAreaId',
-      title: '影响区域',
       align: "center",
       width: 120,
     },
@@ -430,8 +556,11 @@ const gridEvent: VxeGridListeners = {
     console.log(column)
     if (column.field === 'alertTitle') {
       dialogVisible.value = true
-      console.log(dialogVisible.value);
+      console.log(row);
 
+      alertDetail.alertTitle = row.alertTitle
+      alertDetail.alertDesc = row.alertDesc
+      alertDetail.alertTime = row.triggerTime
     }
   },
 }
@@ -462,7 +591,7 @@ onMounted(() => {
 .titleClass {
   font-size: 30px;
   font-weight: lighter;
-  color: #1c1e21;
+  color: #000;
 }
 
 .main {

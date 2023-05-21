@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 import useUserStore from "@/stores/user";
 import router from "@/router/index";
 
@@ -60,6 +60,19 @@ service.interceptors.response.use(res => {
   if (code === 401) {
     useUserStore().logoutUser()
     return Promise.reject('token已过期, 请重新登录。')
+  }
+
+  if (code === 601) {
+    // 关闭之前的通知
+    ElNotification.closeAll();
+    res.data.data.forEach((item: any) => {
+      ElNotification({
+        title: 'Success',
+        message: '已将预警信息推送至' + item.nickname + '的邮箱和短信中',
+        type: 'success',
+      })
+    })
+    return Promise.resolve(msg)
   }
 
   if (code != 200) {

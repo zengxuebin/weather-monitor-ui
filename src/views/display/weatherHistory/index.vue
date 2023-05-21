@@ -183,7 +183,7 @@ getStationByCity(nowCity.value).then(res => {
 })
 
 const dateRange = ref<[Date, Date]>([
-  new Date(new Date().getTime() - 16 * 24 * 60 * 60 * 1000),
+  new Date(new Date().getTime() - 60 * 24 * 60 * 60 * 1000),
   new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
 ])
 
